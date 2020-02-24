@@ -1,0 +1,27 @@
+.goban {
+  display: grid;
+  /* flex-flow: row wrap; */
+  background: #333;
+  height:100%;
+  grid-template-areas: 'board controls'
+  'tree tree';
+  grid-template-columns: 1fr auto;
+  grid-template-rows: minmax(1fr, max-content) auto;
+  transition: .3s ease-in-out all;
+}
+.goboard {
+  grid-area: board;
+  max-height: 100vh;
+  overflow-x: auto;
+  place-self: stretch;
+  height: 100%;
+}
+.tree {
+  grid-area: tree;
+  max-width: 100%;
+  overflow: auto;
+}
+.controls {
+  grid-area: controls;
+}
+

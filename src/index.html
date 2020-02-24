@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+  <title>Stencil Component Starter</title>
+  <style>
+    html, body {
+      margin:0;
+      height: 100%;
+    }
+    .goban {
+      height: 100vh;
+    }
+  </style>
+  <script type="module" src="/build/goboard.esm.js"></script>
+  <script nomodule src="/build/goboard.js"></script>
+
+</head>
+<body>
+
+  <gc-goban class="goban" sgf="(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
+  RU[Japanese]SZ[9]KM[0.00]
+  PW[Blanc]PB[Noir]
+  ;B[cc]
+  ;W[dc]
+  ;B[ec]
+  ;W[fc]
+  (;B[gc]
+  ;W[hc]
+  (;B[ic])
+  (;B[id]))
+  (;B[gd])
+  (;B[ee]
+  ;W[fe]
+  ;B[ge]
+  (;W[he])
+  (;W[gg])))
+
+"></gc-goban>
+</body>
+</html>

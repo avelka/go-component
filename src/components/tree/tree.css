@@ -1,0 +1,75 @@
+:host {
+  display: block;
+
+  min-height: 5em;
+}
+
+.tree-view {
+  display: flex;
+  background: rgba(250, 250, 250, .3);
+  border-radius: 5em;
+  padding: 1em;
+  margin:1em;
+  width:auto;
+}
+.tree-view .tree-view  {
+  padding: 0;
+  margin:0;
+  background: rgba(250, 250, 250, 0);
+}
+
+.stone[data-shared] {
+  opacity: .1;
+}
+.stone {
+  flex-shrink: 0;
+  display: flex;
+  width: 3em;
+  height: 3em;
+  margin:.5em;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  border:none;
+  background: var(--color);
+  color: #666;
+  transition: .3s ease-in-out;
+  transform: scale(.9)
+}
+.stone[data-color="BLACK"] {
+  background: radial-gradient(
+    circle at top left,
+    hsla(240, 26%, 68%, .5) 5% ,
+    rgb(25, 25, 40) 95%
+  ), rgb(25, 25, 40) 95%;
+  box-shadow:
+  inset 0 0 2px 1px rgba(0,0,0, .3),
+  inset -5px -5px 10px -5px rgb(0,0,0),
+  2px 3px 5px 1px rgba(0,0,0, .6);
+}
+.stone[data-color="WHITE"] {
+  background: radial-gradient(
+    circle at top left,
+    hsla(240, 26%, 95%) 5% ,
+    hsla(240, 23%, 65%) 95%
+  ), rgb(25, 25, 40) 95%;
+  box-shadow:
+  inset 0 0 2px 1px rgba(0,0,0, .3),
+  inset -5px -5px 10px -5px rgb(0,0,0),
+  2px 3px 5px 1px rgba(0,0,0, .6);
+}
+.stone:focus {
+  outline:none
+}
+
+.stone:hover {
+  transform: translateY(-2px) scale(.9);
+}
+
+.stone:active {
+  transform: scale(.9)
+}
+.stone[data-selected] {
+  font-weight: 700;
+  transform: scale(1.1);
+}
