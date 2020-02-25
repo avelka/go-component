@@ -5,19 +5,33 @@
 }
 
 .tree-view {
-  display: flex;
+  display: inline-flex;
   background: rgba(250, 250, 250, .3);
   border-radius: 5em;
   padding: 1em;
   margin:1em;
   width:auto;
 }
+
 .tree-view .tree-view  {
   padding: 0;
   margin:0;
   background: rgba(250, 250, 250, 0);
 }
 
+.stone-wrapper {
+  display: flex;
+}
+
+
+.stone-wrapper > .stone{
+
+}
+
+.stone-wrapper > .tree-view {
+
+
+}
 .stone[data-shared] {
   opacity: .1;
 }
@@ -69,7 +83,23 @@
 .stone:active {
   transform: scale(.9)
 }
-.stone[data-selected] {
+.stone[data-is-current] {
   font-weight: 700;
   transform: scale(1.1);
+}
+
+.variations {
+  display:flex;
+  flex-flow: column;
+  max-height: 3em;
+  overflow: hidden;
+}
+
+[data-in-path] > .variations {
+  max-height: none;
+}
+
+:not([data-in-path]) > .stone {
+  opacity:.5;
+  transform: scale(.8);
 }

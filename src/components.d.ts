@@ -29,7 +29,7 @@ export namespace Components {
     'variations': any;
   }
   interface GcTree {
-    'history': any[];
+    'current': any[];
     'position': number;
     'tree': any[];
     'variations': any[];
@@ -113,7 +113,7 @@ declare namespace LocalJSX {
     'variations'?: any;
   }
   interface GcTree {
-    'history'?: any[];
+    'current'?: any[];
     'onSelectPosition'?: (event: CustomEvent<any>) => void;
     'onSelectVariation'?: (event: CustomEvent<any>) => void;
     'position'?: number;

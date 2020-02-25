@@ -104,11 +104,6 @@ export class Controls {
           <span>
             Zoom: {this.options.zoom}
           </span>
-
-          <span>
-            Variation: {JSON.stringify(this.variations)}
-          </span>
-
         </nav>
 
         <div>

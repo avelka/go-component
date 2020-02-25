@@ -7,29 +7,46 @@ import { isSamePosition } from '../../utils/utils';
   shadow: true
 })
 export class Tree {
-  @Prop() history: any[] = [];
-  @Prop() tree: any[] = [];
   @Prop() variations: any[] = [];
+  @Prop() current: any[] = [];
+  @Prop() tree: any[] = [];
   @Prop() position: number = 0;
   @Event() selectPosition: EventEmitter;
   @Event() selectVariation: EventEmitter;
-  select(order, variation) {
+
+  select(order:number, variation: any) {
     this.selectPosition.emit({order, variation});
   }
 
-  showStone = ({state, order, variations}, {source, pos, branch, path = []} ) => <span>
-      <button
-        type="button"
-        data-selected={order == this.position}
-        onClick={() => this.select(order, {source, pos, branch, path})}
-        class="stone"
-        data-color={state}>
-          {order + 1}
-      </button>
-      {variations && variations.length && variations.map((v, vi) => <div class="tree-view">
-        {v.map(s => this.showStone(s, {source: source + 1, pos:order, branch: vi + 1, path: [...path, {source, pos, branch}] }))}
-      </div>)}
-    </span>
+  isCurrent(move) {
+    return this.isInPath(move)
+      && move.order == this.position;
+  }
+
+  isInPath(move) {
+    return isSamePosition(this.current[move.order], move);
+  }
+
+  showStone({state, order, variations, x, y}, {source = 0, pos, branch, path = []} ) {
+    return  <div class="stone-wrapper"
+      data-has-variations={variations && variations.length}
+      data-in-path={this.isInPath({state, order, x, y})}>
+          <button
+            type="button"
+            title={`x:${x};y${y}`}
+            data-is-current={this.isCurrent({state, order, x, y})}
+            onClick={() => this.select(order, {source, pos, branch, path})}
+            class="stone"
+            data-color={state}>
+              {order + 1}
+          </button>
+          <div class="variations">
+          {variations && variations.length && variations.map((v, vi) => <div class="tree-view">
+            {v.map(s => this.showStone(s, {source: source + 1, pos:order, branch: vi + 1, path: [...path, {source, pos, branch}] }))}
+          </div>)}
+          </div>
+        </div>
+  }
 
   render() {
     return (
