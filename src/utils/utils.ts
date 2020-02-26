@@ -129,17 +129,16 @@ export function getScore(history) {
   }, new Map());
 }
 
-export function baseVariation(forks) {
-  const path = new Array(forks.length - 1)
-    .fill({
-      source: forks.length,
-      pos: 0,
-      branch: 1
-    })
-    .map((p, i) => ({ ...p, source: p.source - i }))
+export function baseVariation(forks: any[]) {
+  const def = {
+    source: 0,
+    pos: 0,
+    branch: 0,
+  };
+  const vars = [def, ...forks.map((p, i) => ({ pos: p.order, source: i + 1, branch: 1 }))];
+  const [current, ...path] = vars.reverse();
   return {
-    source: forks.length - 1,
-    pos: 0, branch: 1,
+    ...current,
     path
   }
 }

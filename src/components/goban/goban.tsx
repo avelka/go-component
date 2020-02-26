@@ -15,7 +15,7 @@ export class Goban {
 
   @Prop() sgf = null;
   @Prop() currentPosition: number = 0;
-  @Prop() variations: any = null;
+  @State() variations: any = null;
   @Prop() options: any = {
     play: false,
     showOrder: false,
@@ -55,14 +55,9 @@ export class Goban {
     switch(ev.key) {
       case 'ArrowDown':
       case 'ArrowUp':
-        // const dir: number = ev.key == 'ArrowDown' ? -1 : 1;
-        const forks = this.currentPath.filter(el => el.variations && el.variations.length);
-        const nextFork = forks.find(el => el.order >= this.currentPosition);
+        const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
+        this.changeNextFork(inc);
 
-        const current = this.variations
-          ? {...this.variations}
-          : baseVariation(forks)
-        console.log(nextFork, current);
         break;
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -140,7 +135,6 @@ export class Goban {
             position={this.currentPosition}>
           </gc-tree> }
         </div>
-
       </div>
     );
   }
@@ -215,5 +209,18 @@ export class Goban {
       this.bs.init(this.party.info.size)
     );
   }
+  changeNextFork(inc:number) {
 
+    const forks = this.currentPath.filter(el => el.variations && el.variations.length);
+    const nextFork = forks.find(el => el.order >= this.currentPosition);
+    const current = this.variations
+      ? {...this.variations}
+      : baseVariation(forks);
+
+    const newVariation = {
+      ...current,
+      branch: minMax(1, current.branch + inc, nextFork.variations.length) };
+    this.variations = newVariation;
+    this.currentPath = getCurrentPath(this.party.tree, this.variations)
+  }
 }

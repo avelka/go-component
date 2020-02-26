@@ -31,7 +31,6 @@ export namespace Components {
     'currentPosition': number;
     'options': any;
     'sgf': any;
-    'variations': any;
   }
   interface GcTree {
     'current': any[];
@@ -127,7 +126,6 @@ declare namespace LocalJSX {
     'currentPosition'?: number;
     'options'?: any;
     'sgf'?: any;
-    'variations'?: any;
   }
   interface GcTree {
     'current'?: any[];
