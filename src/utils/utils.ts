@@ -120,3 +120,26 @@ export function getBoardState(gs: any) {
     .reduce((a: any[], c: any[]) => [...a, ...c], [])
     .filter((i: any) => i.state);
 }
+
+export function getScore(history) {
+  return history.reduce((c, { state, captured = [] }) => {
+    const color = state.toUpperCase();
+    c.set(color, (c.has(color) ? c.get(color) : 0) + captured.length)
+    return new Map(c);
+  }, new Map());
+}
+
+export function baseVariation(forks) {
+  const path = new Array(forks.length - 1)
+    .fill({
+      source: forks.length,
+      pos: 0,
+      branch: 1
+    })
+    .map((p, i) => ({ ...p, source: p.source - i }))
+  return {
+    source: forks.length - 1,
+    pos: 0, branch: 1,
+    path
+  }
+}

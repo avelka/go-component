@@ -15,11 +15,16 @@ export namespace Components {
     'size': number;
     'state': any[];
   }
+  interface GcComments {
+    'path': any[];
+    'position': number;
+  }
   interface GcControls {
     'data': any;
     'history': any[];
     'options': any;
     'position': number;
+    'score': any;
     'variations': any;
   }
   interface GcGoban {
@@ -59,6 +64,12 @@ declare global {
     new (): HTMLGcBoardElement;
   };
 
+  interface HTMLGcCommentsElement extends Components.GcComments, HTMLStencilElement {}
+  var HTMLGcCommentsElement: {
+    prototype: HTMLGcCommentsElement;
+    new (): HTMLGcCommentsElement;
+  };
+
   interface HTMLGcControlsElement extends Components.GcControls, HTMLStencilElement {}
   var HTMLGcControlsElement: {
     prototype: HTMLGcControlsElement;
@@ -84,6 +95,7 @@ declare global {
   };
   interface HTMLElementTagNameMap {
     'gc-board': HTMLGcBoardElement;
+    'gc-comments': HTMLGcCommentsElement;
     'gc-controls': HTMLGcControlsElement;
     'gc-goban': HTMLGcGobanElement;
     'gc-tree': HTMLGcTreeElement;
@@ -97,6 +109,10 @@ declare namespace LocalJSX {
     'size'?: number;
     'state'?: any[];
   }
+  interface GcComments {
+    'path'?: any[];
+    'position'?: number;
+  }
   interface GcControls {
     'data'?: any;
     'history'?: any[];
@@ -104,6 +120,7 @@ declare namespace LocalJSX {
     'onSelectPosition'?: (event: CustomEvent<any>) => void;
     'options'?: any;
     'position'?: number;
+    'score'?: any;
     'variations'?: any;
   }
   interface GcGoban {
@@ -137,6 +154,7 @@ declare namespace LocalJSX {
 
   interface IntrinsicElements {
     'gc-board': GcBoard;
+    'gc-comments': GcComments;
     'gc-controls': GcControls;
     'gc-goban': GcGoban;
     'gc-tree': GcTree;
@@ -151,6 +169,7 @@ declare module "@stencil/core" {
   export namespace JSX {
     interface IntrinsicElements {
       'gc-board': LocalJSX.GcBoard & JSXBase.HTMLAttributes<HTMLGcBoardElement>;
+      'gc-comments': LocalJSX.GcComments & JSXBase.HTMLAttributes<HTMLGcCommentsElement>;
       'gc-controls': LocalJSX.GcControls & JSXBase.HTMLAttributes<HTMLGcControlsElement>;
       'gc-goban': LocalJSX.GcGoban & JSXBase.HTMLAttributes<HTMLGcGobanElement>;
       'gc-tree': LocalJSX.GcTree & JSXBase.HTMLAttributes<HTMLGcTreeElement>;

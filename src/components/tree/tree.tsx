@@ -31,27 +31,27 @@ export class Tree {
     return  <div class="stone-wrapper"
       data-has-variations={variations && variations.length}
       data-in-path={this.isInPath({state, order, x, y})}>
-          <button
-            type="button"
-            title={`x:${x};y${y}`}
-            data-is-current={this.isCurrent({state, order, x, y})}
-            onClick={() => this.select(order, {source, pos, branch, path})}
-            class="stone"
-            data-color={state}>
-              {order + 1}
-          </button>
-          <div class="variations">
-          {variations && variations.length && variations.map((v, vi) => <div class="tree-view">
-            {v.map(s => this.showStone(s, {source: source + 1, pos:order, branch: vi + 1, path: [...path, {source, pos, branch}] }))}
-          </div>)}
-          </div>
+        <button
+          type="button"
+          title={`x:${x};y${y}`}
+          data-is-current={this.isCurrent({state, order, x, y})}
+          onClick={() => this.select(order, {source, pos, branch, path})}
+          class="stone"
+          data-color={state}>
+            {order + 1}
+        </button>
+        <div class="variations">
+        {variations && variations.length && variations.map((v, vi) => <div class="tree-view">
+          {v.map(s => this.showStone(s, {source: source + 1, pos:order, branch: vi + 1, path: [...path, {source, pos, branch}] }))}
+        </div>)}
         </div>
+      </div>
   }
 
   render() {
     return (
       <div>
-        {this.position + 1} / {this.tree.length}
+        {this.position + 1} / {this.current.length}
         <div class="tree-view">
           {this.tree.map(s => this.showStone(s, {source: 0, pos: 0, branch: 0}))}
         </div>

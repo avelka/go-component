@@ -24,13 +24,14 @@ export class Controls {
   @Prop() variations: any = {};
   @Prop() position: number = 0;
   @Prop() options: any = {};
+  @Prop() score: any = {};
   @Event() selectPosition: EventEmitter;
   @Event() optionChange: EventEmitter;
-
 
   next() {
     this.selectPosition.emit(this.position + 1);
   }
+
   prev() {
     this.selectPosition.emit(this.position - 1);
   }
@@ -38,6 +39,7 @@ export class Controls {
   toggleNumber() {
     this.optionChange.emit({order: !this.options.order});
   }
+
   toggleTree() {
     this.optionChange.emit({tree: !this.options.tree});
   }
@@ -48,22 +50,36 @@ export class Controls {
     } else {
       this.optionChange.emit({play: false});
     }
-
   }
+
   changeInterval(event) {
     this.optionChange.emit({interval: parseInt(event.target.value, 10)});
   }
+
   changeMode(event) {
     this.optionChange.emit({mode: event.target.value});
   }
+
   render() {
     const isTurn = this.data.players[this.position % this.data.players.length].color;
+
+    const players = this.data.players.map(p => {
+      return {...p, score: this.score.get(p.color)};
+    });
+
     return (
       <section>
         <header class="players-container">
-          {this.data.players.map(player => <div data-player={player.color} data-isturn={player.color == isTurn}>
-            <span>{player.name} ({player.level})</span>
+          {players.map(({color, name, level, score}) => <div
+          data-player={color}
+          data-isturn={color == isTurn}
+          >
+            <div>
+              <span>{name} {level && `(${level})`}</span>
+              <span class="captured">Captured: {score}</span>
+            </div>
           </div>)}
+
         </header>
         <nav>
           <button type="button" onClick={() => this.prev()}><img src={prev}/></button>

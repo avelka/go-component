@@ -1,16 +1,16 @@
 :host {
   display: block;
-
   min-height: 5em;
 }
 
 .tree-view {
-  display: inline-flex;
+  display: flex;
   background: rgba(250, 250, 250, .3);
-  border-radius: 5em;
+  border-radius: 2em;
   padding: 1em;
-  margin:1em;
+  margin:.5em;
   width:auto;
+  overflow: auto;
 }
 
 .tree-view .tree-view  {
@@ -23,18 +23,10 @@
   display: flex;
 }
 
-
-.stone-wrapper > .stone{
-
-}
-
-.stone-wrapper > .tree-view {
-
-
-}
 .stone[data-shared] {
   opacity: .1;
 }
+
 .stone {
   flex-shrink: 0;
   display: flex;

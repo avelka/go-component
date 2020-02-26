@@ -1,10 +1,14 @@
 :host {
   display: block;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-
+}
+.players-container {
+  display:flex;
+  flex-flow: row wrap;
 }
 nav,
 [data-player] {
+  flex: 1 0 150px;
   display: flex;
   align-items: center;
   background: rgba(0,0,0,.3);
@@ -28,6 +32,16 @@ nav {
 
 [data-player][data-isturn] {
   animation: test .5s ease-in-out forwards;
+}
+
+[data-player] > div {
+  display: flex;
+  flex-flow: column;
+}
+
+[data-player] .captured {
+  font-size: .8em;
+  opacity: .32;
 }
 
 [data-player]::before {

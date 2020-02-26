@@ -1,6 +1,6 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
 import sgfgrove from 'sgfgrove';
-import { minMax, getCurrentPath, toTree, getBoardState } from '../../utils/utils';
+import { minMax, getCurrentPath, toTree, getBoardState, getScore, baseVariation } from '../../utils/utils';
 import { BoardService } from 'kifu';
 
 import {MODE} from "../../utils/utils";
@@ -53,6 +53,17 @@ export class Goban {
   @Listen('keydown', { target: 'parent' })
   handleKeyDown(ev: KeyboardEvent){
     switch(ev.key) {
+      case 'ArrowDown':
+      case 'ArrowUp':
+        // const dir: number = ev.key == 'ArrowDown' ? -1 : 1;
+        const forks = this.currentPath.filter(el => el.variations && el.variations.length);
+        const nextFork = forks.find(el => el.order >= this.currentPosition);
+
+        const current = this.variations
+          ? {...this.variations}
+          : baseVariation(forks)
+        console.log(nextFork, current);
+        break;
       case 'ArrowLeft':
       case 'ArrowRight':
         const dir: number = ev.key == 'ArrowLeft' ? -1 : 1;
@@ -94,29 +105,42 @@ export class Goban {
   }
 
   render() {
+    const meta = {
+      ...this.party.meta,
+      ...this.party.info,
+      players: this.party.players,
+    };
+    const score = getScore(this.board.history);
     return (
       <div class="goban">
         <gc-board
           class="goboard"
           options={this.options}
           size={this.party.info.size}
-          state={getBoardState(this.board)}></gc-board>
-        <gc-controls
-        class="controls"
-        data={{
-          ...this.party.meta,
-          ...this.party.info,
-          players: this.party.players
-        }}
-        options={this.options}
-        variations={this.variations}
-        position={this.currentPosition}></gc-controls>
-        { this.options.tree ? <gc-tree class="tree"
-          variations={this.variations}
-          tree={this.party.tree}
-          current={this.currentPath}
-          position={this.currentPosition}>
-        </gc-tree> :<span></span>}
+          state={getBoardState(this.board)}>
+        </gc-board>
+        <div class="controls">
+          <gc-controls
+            data={meta}
+            score={score}
+            options={this.options}
+            variations={this.variations}
+            position={this.currentPosition}>
+          </gc-controls>
+          <gc-comments
+            class="comments"
+            position={this.currentPosition}
+            path={this.currentPath}>
+          </gc-comments>
+          { this.options.tree &&
+          <gc-tree class="tree"
+            variations={this.variations}
+            tree={this.party.tree}
+            current={this.currentPath}
+            position={this.currentPosition}>
+          </gc-tree> }
+        </div>
+
       </div>
     );
   }
