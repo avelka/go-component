@@ -62,7 +62,6 @@ export class Controls {
 
   render() {
     const isTurn = this.data.players[this.position % this.data.players.length].color;
-
     const players = this.data.players.map(p => {
       return {...p, score: this.score.get(p.color)};
     });
@@ -72,7 +71,7 @@ export class Controls {
         <header class="players-container">
           {players.map(({color, name, level, score}) => <div
           data-player={color}
-          data-isturn={color == isTurn}
+          data-isturn={color === isTurn}
           >
             <div>
               <span>{name} {level && `(${level})`}</span>

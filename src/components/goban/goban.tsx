@@ -1,6 +1,5 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import sgfgrove from 'sgfgrove';
-import { minMax, getCurrentPath, toTree, getBoardState, getScore, baseVariation } from '../../utils/utils';
+import { minMax, getCurrentPath, getBoardState, getScore, baseVariation, toMove, parse, compareBranch } from '../../utils/utils';
 import { BoardService } from 'kifu';
 
 import {MODE} from "../../utils/utils";
@@ -15,20 +14,20 @@ export class Goban {
 
   @Prop() sgf = null;
   @Prop() currentPosition: number = 0;
-  @State() variations: any = null;
+  @State() variations: any = [0];
   @Prop() options: any = {
     play: false,
     showOrder: false,
     edit: false,
     nav: true,
-    tree: false,
+    tree: true,
     interval: 5,
     mode: MODE.READ,
     zoom: 100
   };
 
-  party = this.parse(this.sgf);
-  @State() currentPath = getCurrentPath(this.party.tree, this.variations)
+  party = parse(this.sgf);
+  @State() currentPath = getCurrentPath(this.party.game, this.variations)
   @State() board = this.getGameState();
   timer: number;
 
@@ -53,11 +52,13 @@ export class Goban {
   @Listen('keydown', { target: 'parent' })
   handleKeyDown(ev: KeyboardEvent){
     switch(ev.key) {
+      case 'd':
+        console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
+        break;
       case 'ArrowDown':
       case 'ArrowUp':
         const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
         this.changeNextFork(inc);
-
         break;
       case 'ArrowLeft':
       case 'ArrowRight':
@@ -105,7 +106,8 @@ export class Goban {
       ...this.party.info,
       players: this.party.players,
     };
-    const score = getScore(this.board.history);
+
+    const score = getScore(this.board.history) ;
     return (
       <div class="goban">
         <gc-board
@@ -130,7 +132,7 @@ export class Goban {
           { this.options.tree &&
           <gc-tree class="tree"
             variations={this.variations}
-            tree={this.party.tree}
+            tree={this.party.game}
             current={this.currentPath}
             position={this.currentPosition}>
           </gc-tree> }
@@ -162,65 +164,34 @@ export class Goban {
     }
   }
 
-  updatePosition({order, variation = null}) {
-
-    if (variation) {
-      this.variations = variation.source ? variation : null;
+  updatePosition({order, variation = []}) {
+    if (variation.length && !compareBranch(this.variations, variation)) {
+      this.variations = variation;
     }
-    this.currentPath = getCurrentPath(this.party.tree, this.variations);
-    this.currentPosition = minMax(0, order, this.currentPath.length);
+    this.currentPath = getCurrentPath(this.party.game, this.variations);
+    this.currentPosition = minMax(0, order, this.currentPath.length - 1);
     this.board = this.getGameState();
   }
 
-  parse(sgf: any) {
-    const parsed = sgfgrove.parse(sgf)
-    const [[[meta, ...game], branchs]] = parsed;
-    const { PB, PW, BR, WR, SZ, KM, RU, GN, CP, US, AN, TM, OT, RE, DT, ...rest } = meta;
-
-    return {
-        players: [
-            { color: 'BLACK', name: PB, level: BR },
-            { color: 'WHITE', name: PW, level: WR },
-        ],
-        info: {
-            size: SZ,
-            komi: KM,
-            rule: RU,
-            time: TM,
-            overtime: OT
-        },
-        meta: {
-            name: GN,
-            copyright: CP,
-            scribe: US,
-            commentator: AN,
-            result: RE,
-            date: DT
-        },
-        rest,
-        tree: toTree([game, branchs])
-    };
-  }
-
   getGameState() {
-    return this.currentPath
-      .slice(0, this.currentPosition + 1)
+    const [root, ...path] = this.currentPath.map(toMove);
+    return path
+      .slice(0, this.currentPosition)
       .reduce((a: any, { x, y }) => a.play(x, y),
-      this.bs.init(this.party.info.size)
+      this.bs.init(root.SZ)
     );
   }
   changeNextFork(inc:number) {
 
-    const forks = this.currentPath.filter(el => el.variations && el.variations.length);
-    const nextFork = forks.find(el => el.order >= this.currentPosition);
-    const current = this.variations
-      ? {...this.variations}
-      : baseVariation(forks);
+    const current = this.currentPath[this.currentPosition].source;
+    const {source: nextFork} = this.currentPath.find(p => p.source.level == current.level + 1) || {};
+    if (nextFork) {
+      this.variations = [
+        ...this.variations.slice(0, nextFork.level - 1),
+        minMax(0, nextFork.branch + inc, Infinity)
+      ];
+      this.currentPath = getCurrentPath(this.party.game, this.variations)
+    }
 
-    const newVariation = {
-      ...current,
-      branch: minMax(1, current.branch + inc, nextFork.variations.length) };
-    this.variations = newVariation;
-    this.currentPath = getCurrentPath(this.party.tree, this.variations)
   }
 }

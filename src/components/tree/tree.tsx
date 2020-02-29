@@ -1,5 +1,5 @@
 import { Component, h, Prop , Event, EventEmitter} from '@stencil/core';
-import { isSamePosition } from '../../utils/utils';
+import { isSamePosition, toMove, compareBranch } from '../../utils/utils';
 
 @Component({
   tag: 'gc-tree',
@@ -18,42 +18,49 @@ export class Tree {
     this.selectPosition.emit({order, variation});
   }
 
-  isCurrent(move) {
-    return this.isInPath(move)
+  isCurrent(move, vpath) {
+    return this.isInPath(vpath)
       && move.order == this.position;
   }
 
-  isInPath(move) {
-    return isSamePosition(this.current[move.order], move);
+  isInPath(path = []) {
+   return compareBranch(this.variations, path);
+  }
+  showBranch(branch, order = 0, vpath = []) {
+    const [main, variations = []] = branch;
+    return (<div class="tree-view">
+      <div class="stones-wrapper">{
+        Array.isArray(main)
+          ? main.map((m, o) => this.showStone(m, o + order, vpath))
+          : this.showStone(main, order, vpath)
+      }</div>
+      <div>
+        {variations.map((v, bi) => this.showBranch(v, order + main.length, [...vpath, bi]))}
+      </div>
+    </div>);
   }
 
-  showStone({state, order, variations, x, y}, {source = 0, pos, branch, path = []} ) {
-    return  <div class="stone-wrapper"
-      data-has-variations={variations && variations.length}
-      data-in-path={this.isInPath({state, order, x, y})}>
-        <button
-          type="button"
-          title={`x:${x};y${y}`}
-          data-is-current={this.isCurrent({state, order, x, y})}
-          onClick={() => this.select(order, {source, pos, branch, path})}
-          class="stone"
-          data-color={state}>
-            {order + 1}
+  showStone(stone, i, vpath) {
+    const move = toMove(stone, i);
+    return <button
+    type="button"
+    class="stone"
+    title={`${move.x}.${move.y} - ${JSON.stringify(vpath)}`}
+    onClick={() => this.select(move.order || 0, vpath)}
+    data-in-path={this.isInPath(vpath)}
+    data-is-current={this.isCurrent(move, vpath)}
+    data-color={move.state}
+          >
+          {move.order}
         </button>
-        <div class="variations">
-        {variations && variations.length && variations.map((v, vi) => <div class="tree-view">
-          {v.map(s => this.showStone(s, {source: source + 1, pos:order, branch: vi + 1, path: [...path, {source, pos, branch}] }))}
-        </div>)}
-        </div>
-      </div>
   }
 
   render() {
     return (
       <div>
-        {this.position + 1} / {this.current.length}
+        {this.position} / {this.current.length - 1} | {JSON.stringify(this.variations)}
         <div class="tree-view">
-          {this.tree.map(s => this.showStone(s, {source: 0, pos: 0, branch: 0}))}
+          {this.showBranch(this.tree)}
         </div>
       </div>
     );

@@ -71,7 +71,7 @@ export class Board {
   }
 
   render() {
-    const stones: any[] = this.state
+    const stones: any[] = (this.state || [])
     .map(({order, state, x, y}) => ({
       order: order + 1,
       color: state,
