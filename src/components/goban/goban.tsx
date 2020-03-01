@@ -33,7 +33,6 @@ export class Goban {
 
   @Listen('selectPosition')
   handlePosition(event: CustomEvent) {
-    console.log(event.detail)
    this.updatePosition(event.detail);
   }
 
@@ -178,7 +177,6 @@ export class Goban {
 
     this.currentPath = getCurrentPath(this.party.tree, this.variations);
     this.currentPosition = minMax(0, order, this.currentPath.length - 1);
-    console.log(this.currentPosition);
     this.board = this.getGameState();
   }
 
