@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element } from '@stencil/core';
+import { Component, h, Prop, Element, State } from '@stencil/core';
 import Debounce from 'debounce-decorator';
 import { minMax } from '../../utils/utils';
 
@@ -15,7 +15,8 @@ export class Board {
   };
 
   @Prop() size: number = 19;
-  @Prop() state: any[];
+  @Prop() state: any[] = [];
+  @Prop() overlay: any[] = [];
   target = null;
 
   width = 500;
@@ -81,6 +82,15 @@ export class Board {
       y: this.getPos(y)
     }));
 
+    const markers: any[] = (this.overlay || [])
+      .map(({x, y, ...marker}) => ({
+        ...marker,
+        xt: this.getPos(x) + (this.lineSpace / 2),
+        yt: this.getPos(y) + (this.lineSpace / 2),
+        x: this.getPos(x),
+        y: this.getPos(y)
+      }));
+
     const target = this.target ? {
       x: this.getPos(this.target.x),
       y: this.getPos(this.target.y),
@@ -143,7 +153,7 @@ export class Board {
       </symbol>
         {this.renderStoneSymbol("black")}
         {this.renderStoneSymbol("white")}
-
+        {markers.length && this.renderMarkersSymbol() }
         <path class="board" d={this.outerPath}></path>
         <g class="lines">
             <path  d={this.innerPath}></path>
@@ -154,7 +164,15 @@ export class Board {
           <path fill="transparent" d={this.outerPath}></path>
           {stones.map(({color, x, y, xt, yt, order}) => <g class={color}>
               <use xlinkHref={`#stone_${color}`} x={x}  y={y}/>
-              {this.options.order && <text x={xt} y={yt}>{order}</text>}
+              {this.options.order && order && <text x={xt} y={yt}>{order}</text>}
+            </g>)}
+        </g>
+        <g class="markers">
+          <path fill="transparent" d={this.outerPath}></path>
+          {markers.map(({state, label, boardState, x, y, xt, yt}) => <g>
+              {state && <use xlinkHref={`#marker_${state}_on${boardState}`} x={x}  y={y}/>}
+              {label && boardState === 'empty' && <use xlinkHref={`#marker_label_on${boardState}`} x={x}  y={y}/>}
+              {label && <text class={`on${boardState}`} x={xt} y={yt}>{label}</text>}
             </g>)}
         </g>
         <use class="target" xlinkHref="#target" x={target.x} y={target.y}/>
@@ -193,6 +211,45 @@ export class Board {
       </symbol>
     );
   }
+  renderMarkersSymbol() {
+    const size = this.lineSpace;
+    return (
+      <g>
 
+        <symbol id={`marker_circle_onempty`} width={size} height={size} viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="6" fill="none" strokeWidth="1" stroke="#000" opacity="0.7"/>
+        </symbol>
+        <symbol id={`marker_triangle_onempty`} width={size} height={size} viewBox="0 0 20 20">
+          <polygon points="10,5 5,15 15,15" fill="transparent" strokeWidth="2" stroke="#000" opacity="0.7" />
+        </symbol>
+        <symbol id={`marker_square_onempty`} width={size} height={size} viewBox="0 0 20 20">
+          <rect x="5" y="5" width="10" height="10" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
+        </symbol>
+
+        <symbol id={`marker_circle_onblack`} width={size} height={size} viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="6" fill="none" strokeWidth="1" stroke="#fff" opacity="0.7"/>
+        </symbol>
+        <symbol id={`marker_triangle_onblack`} width={size} height={size} viewBox="0 0 20 20">
+          <polygon points="10,5 5,15 15,15" fill="transparent" strokeWidth="2" stroke="#fff" opacity="0.7" />
+        </symbol>
+        <symbol id={`marker_square_onblack`} width={size} height={size} viewBox="0 0 20 20">
+          <rect x="5" y="5" width="10" height="10" fill="transparent" strokeWidth="1" stroke="#fff" opacity="0.7"/>
+        </symbol>
+
+        <symbol id={`marker_circle_onwhite`} width={size} height={size} viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="6" fill="none" strokeWidth="1" stroke="#000" opacity="0.7"/>
+        </symbol>
+        <symbol id={`marker_triangle_onwhite`} width={size} height={size} viewBox="0 0 20 20">
+          <polygon points="10,5 5,15 15,15" fill="transparent" strokeWidth="2" stroke="#000" opacity="0.7" />
+        </symbol>
+        <symbol id={`marker_square_onwhite`} width={size} height={size} viewBox="0 0 20 20">
+          <rect x="5" y="5" width="10" height="10" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
+        </symbol>
+        <symbol id={`marker_label_onempty`} width={size} height={size} viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="6" fill="rgb(223, 178, 96)"/>
+        </symbol>
+    </g>
+    );
+  }
 
 }

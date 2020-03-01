@@ -32,6 +32,9 @@ export const fromSGFCoord = (sgfnode: any) => {
   return { x: null, y: null };
 };
 
+export const EMPTY = null;
+export const BLACK = 'BLACK';
+export const WHITE = 'WHITE';
 
 export const MODE = {
   READ: 'READ',
@@ -77,11 +80,18 @@ export const isSamePosition = (
 
 
 export const extractVariations = (tree, path = [], lvl = 0, order = 0) => {
-  const [main, variations] = tree;
+  const [main, variations = []] = tree;
   const branch = path && path[lvl] || 0;
-  const flat = main.map((m, o) => ({ ...m, order: o + order, source: { pos: order - 1, branch, level: lvl } }))
+  const flat = main.map((m, o) => ({
+    ...m, order: o + order, source: {
+      pos: order - 1,
+      branch,
+      level: lvl,
+      variations: variations.length
+    }
+  }))
 
-  return variations && variations.length
+  return variations.length
     ? [...flat, ...extractVariations(variations[branch], path, lvl + 1, flat.length + 1)]
     : flat;
 };
@@ -107,18 +117,22 @@ export function toTree(collection: any[], o: number = 0) {
   return moves;
 }
 
-export const toMove = (m: any, i: number) => ({
-  order: i,
-  ...m,
-  comment: m.C,
-  state: m.B ? 'BLACK' : 'WHITE',
-  ...fromSGFCoord(m)
-});
+export const toMove = (m: any, i: number) => {
 
-export function getBoardState(gs: any) {
-  return gs.board && gs.board
+  const color = (m.B || m.W ? (m.B ? BLACK : WHITE) : EMPTY);
+  return {
+    order: i,
+    ...m,
+    comment: m.C,
+    state: color,
+    ...fromSGFCoord(m)
+  };
+};
+
+export function getBoardState(board: any) {
+  return board && board
     .reduce((a: any[], c: any[]) => [...a, ...c], [])
-    .filter((i: any) => i.state);
+    .filter((i: any) => i.state || i.label);
 }
 
 export function getScore(history) {
@@ -189,7 +203,6 @@ export function parse(sgf: any) {
       date: DT
     },
     rest,
-    game: parsed[0],
     tree: parsed[0],
   };
 }

@@ -1,5 +1,5 @@
 import { Component, h, Prop , Event, EventEmitter} from '@stencil/core';
-import { isSamePosition, toMove, compareBranch } from '../../utils/utils';
+import {toMove, compareBranch } from '../../utils/utils';
 
 @Component({
   tag: 'gc-tree',
@@ -45,14 +45,13 @@ export class Tree {
     return <button
     type="button"
     class="stone"
-    title={`${move.x}.${move.y} - ${JSON.stringify(vpath)}`}
+    title={`${move.x + 1}.${move.y + 1}`}
     onClick={() => this.select(move.order || 0, vpath)}
     data-in-path={this.isInPath(vpath)}
     data-is-current={this.isCurrent(move, vpath)}
-    data-color={move.state}
-          >
-          {move.order}
-        </button>
+    data-color={move.state}>
+      {move.order}
+    </button>
   }
 
   render() {

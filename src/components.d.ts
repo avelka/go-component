@@ -12,6 +12,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 export namespace Components {
   interface GcBoard {
     'options': { order: boolean; zoom: number; };
+    'overlay': any[];
     'size': number;
     'state': any[];
   }
@@ -105,6 +106,7 @@ declare global {
 declare namespace LocalJSX {
   interface GcBoard {
     'options'?: { order: boolean; zoom: number; };
+    'overlay'?: any[];
     'size'?: number;
     'state'?: any[];
   }

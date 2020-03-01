@@ -1,8 +1,8 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getBoardState, getScore, baseVariation, toMove, parse, compareBranch } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState } from '../../utils/utils';
 import { BoardService } from 'kifu';
 
-import {MODE} from "../../utils/utils";
+import { MODE } from "../../utils/utils";
 
 @Component({
   tag: 'gc-goban',
@@ -11,7 +11,6 @@ import {MODE} from "../../utils/utils";
 })
 export class Goban {
   bs = new BoardService();
-
   @Prop() sgf = null;
   @Prop() currentPosition: number = 0;
   @State() variations: any = [0];
@@ -26,8 +25,9 @@ export class Goban {
     zoom: 100
   };
 
+
   party = parse(this.sgf);
-  @State() currentPath = getCurrentPath(this.party.game, this.variations)
+  @State() currentPath = getCurrentPath(this.party.tree, this.variations)
   @State() board = this.getGameState();
   timer: number;
 
@@ -106,7 +106,12 @@ export class Goban {
       ...this.party.info,
       players: this.party.players,
     };
-
+    const overlay = getBoardState(this.board.overlay).map(o => {
+      return {
+        ...o,
+        boardState: this.bs.at(o.x, o.y).state || 'empty'
+      }
+    });
     const score = getScore(this.board.history) ;
     return (
       <div class="goban">
@@ -114,7 +119,8 @@ export class Goban {
           class="goboard"
           options={this.options}
           size={this.party.info.size}
-          state={getBoardState(this.board)}>
+          state={getBoardState(this.board.board)}
+          overlay={overlay}>
         </gc-board>
         <div class="controls">
           <gc-controls
@@ -132,7 +138,7 @@ export class Goban {
           { this.options.tree &&
           <gc-tree class="tree"
             variations={this.variations}
-            tree={this.party.game}
+            tree={this.party.tree}
             current={this.currentPath}
             position={this.currentPosition}>
           </gc-tree> }
@@ -168,30 +174,35 @@ export class Goban {
     if (variation.length && !compareBranch(this.variations, variation)) {
       this.variations = variation;
     }
-    this.currentPath = getCurrentPath(this.party.game, this.variations);
+    this.currentPath = getCurrentPath(this.party.tree, this.variations);
     this.currentPosition = minMax(0, order, this.currentPath.length - 1);
     this.board = this.getGameState();
   }
 
   getGameState() {
-    const [root, ...path] = this.currentPath.map(toMove);
-    return path
-      .slice(0, this.currentPosition)
-      .reduce((a: any, { x, y }) => a.play(x, y),
-      this.bs.init(root.SZ)
-    );
+    const val = this.currentPath
+    .slice(0, this.currentPosition + 1)
+    .reduce((a: any, m:any) => a.set(m),
+    this.bs.init(this.party.info.size));
+    return val;
   }
-  changeNextFork(inc:number) {
 
+  changeNextFork(inc:number) {
+    // TODO: get the branch number for looping over them instead of stopping on the edges;
     const current = this.currentPath[this.currentPosition].source;
     const {source: nextFork} = this.currentPath.find(p => p.source.level == current.level + 1) || {};
+
     if (nextFork) {
+      const currentFork = this.variations[nextFork.level - 1];
+
+      const choices = current.variations - 1;
+      const val = ((currentFork || nextFork.level) + inc);
+      const branch = minMax(0, val, choices);
       this.variations = [
         ...this.variations.slice(0, nextFork.level - 1),
-        minMax(0, nextFork.branch + inc, Infinity)
+        branch
       ];
-      this.currentPath = getCurrentPath(this.party.game, this.variations)
+      this.currentPath = getCurrentPath(this.party.tree, this.variations)
     }
-
   }
 }

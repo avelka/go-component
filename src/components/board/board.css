@@ -29,6 +29,7 @@
   fill: #000;
 }
 
+.markers text,
 .white text,
 .black text {
   font-family: sans-serif;
@@ -38,9 +39,16 @@
   font-size: 10px;
 
 }
+.markers text {
+  font-size: 16px;
+}
+text.onempty,
+text.onwhite,
 .white text {
   fill: #000;
 }
+text.onblack,
 .black text {
   fill: #fff;
 }
+
