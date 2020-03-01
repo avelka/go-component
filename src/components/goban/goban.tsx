@@ -33,6 +33,7 @@ export class Goban {
 
   @Listen('selectPosition')
   handlePosition(event: CustomEvent) {
+    console.log(event.detail)
    this.updatePosition(event.detail);
   }
 
@@ -174,27 +175,29 @@ export class Goban {
     if (variation.length && !compareBranch(this.variations, variation)) {
       this.variations = variation;
     }
+
     this.currentPath = getCurrentPath(this.party.tree, this.variations);
     this.currentPosition = minMax(0, order, this.currentPath.length - 1);
+    console.log(this.currentPosition);
     this.board = this.getGameState();
   }
 
   getGameState() {
     const val = this.currentPath
-    .slice(0, this.currentPosition + 1)
-    .reduce((a: any, m:any) => a.set(m),
-    this.bs.init(this.party.info.size));
+      .slice(0, this.currentPosition + 1)
+      .reduce(
+        (a: any, m:any) => a.set(m),
+        this.bs.init(this.party.info.size)
+      );
     return val;
   }
 
   changeNextFork(inc:number) {
-    // TODO: get the branch number for looping over them instead of stopping on the edges;
     const current = this.currentPath[this.currentPosition].source;
     const {source: nextFork} = this.currentPath.find(p => p.source.level == current.level + 1) || {};
 
     if (nextFork) {
       const currentFork = this.variations[nextFork.level - 1];
-
       const choices = current.variations - 1;
       const val = ((currentFork || nextFork.level) + inc);
       const branch = minMax(0, val, choices);

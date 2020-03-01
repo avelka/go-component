@@ -29,11 +29,11 @@ export class Controls {
   @Event() optionChange: EventEmitter;
 
   next() {
-    this.selectPosition.emit(this.position + 1);
+    this.selectPosition.emit({ order: this.position + 1 });
   }
 
   prev() {
-    this.selectPosition.emit(this.position - 1);
+    this.selectPosition.emit({ order: this.position - 1 });
   }
 
   toggleNumber() {
