@@ -74,7 +74,7 @@ export class Board {
   render() {
     const stones: any[] = (this.state || [])
     .map(({order, state, x, y}) => ({
-      order: order + 1,
+      order: order,
       color: state,
       xt: this.getPos(x) + (this.lineSpace / 2),
       yt: this.getPos(y) + (this.lineSpace / 2),
@@ -96,7 +96,7 @@ export class Board {
       y: this.getPos(this.target.y),
     } : {x: 0, y: 0};
 
-    const zoomFactor = this.options.zoom / 100;
+    const zoomFactor = 100 / this.options.zoom;
     const getCenter = () => (this.width - (this.width * zoomFactor)) / 2;
     const vb = {
       x: zoomFactor != 1 ? getCenter() : 0,

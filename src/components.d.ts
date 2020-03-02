@@ -117,6 +117,7 @@ declare namespace LocalJSX {
   interface GcControls {
     'data'?: any;
     'history'?: any[];
+    'onDownload'?: (event: CustomEvent<any>) => void;
     'onOptionChange'?: (event: CustomEvent<any>) => void;
     'onSelectPosition'?: (event: CustomEvent<any>) => void;
     'options'?: any;

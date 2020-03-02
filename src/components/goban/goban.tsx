@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF } from '../../utils/utils';
 import { BoardService } from 'kifu';
 
 import { MODE } from "../../utils/utils";
@@ -25,7 +25,6 @@ export class Goban {
     zoom: 100
   };
 
-
   party = parse(this.sgf);
   @State() currentPath = getCurrentPath(this.party.tree, this.variations)
   @State() board = this.getGameState();
@@ -47,6 +46,12 @@ export class Goban {
       ...change
     };
     this.options = newOptions;
+  }
+
+  @Listen('download')
+  dowloadGame(ev) {
+    const { type } = ev.detail;
+    dowloadAsSGF(this.party);
   }
 
   @Listen('keydown', { target: 'parent' })

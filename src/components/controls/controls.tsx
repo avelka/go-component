@@ -26,6 +26,7 @@ export class Controls {
   @Prop() options: any = {};
   @Prop() score: any = {};
   @Event() selectPosition: EventEmitter;
+  @Event() download: EventEmitter;
   @Event() optionChange: EventEmitter;
 
   next() {
@@ -58,6 +59,9 @@ export class Controls {
 
   changeMode(event) {
     this.optionChange.emit({mode: event.target.value});
+  }
+  getSGF() {
+    this.download.emit({type: 'sgf'})
   }
 
   render() {
@@ -119,6 +123,9 @@ export class Controls {
           <span>
             Zoom: {this.options.zoom}
           </span>
+          <button type="button" onClick={() => this.getSGF()}>
+            download
+          </button>
         </nav>
 
         <div>
