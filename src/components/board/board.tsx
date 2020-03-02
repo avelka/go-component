@@ -1,6 +1,6 @@
-import { Component, h, Prop, Element, State } from '@stencil/core';
+import { Component, h, Prop, Element } from '@stencil/core';
 import Debounce from 'debounce-decorator';
-import { minMax } from '../../utils/utils';
+import { minMax, animateCirclePosition, BLACK, WHITE, n2a } from '../../utils/utils';
 
 @Component({
   tag: 'gc-board',
@@ -17,6 +17,8 @@ export class Board {
   @Prop() size: number = 19;
   @Prop() state: any[] = [];
   @Prop() overlay: any[] = [];
+  @Prop() ghosts: any[] = [];
+
   target = null;
 
   width = 500;
@@ -32,31 +34,15 @@ export class Board {
   @Debounce(100)
   handleOver(e: MouseEvent) {
     this.target = this.getPosFromCoord(e.x, e.y);
-    const targetEl = this.el.querySelector('.target');
-    const ox = targetEl.getAttribute("x");
+    const pointer = this.el.querySelector('.target');
+    const ox = pointer.getAttribute("x");
+    const oy = pointer.getAttribute("y");
     const nx = this.getPos(this.target.x).toString();
-    const oy = targetEl.getAttribute("y");
     const ny = this.getPos(this.target.y).toString();
-    const updateEl = (el, o, n) => {
-      el.setAttribute("x", n.x);
-      el.setAttribute("y", n.y);
-      el
-      .animate([{
-        x: o.x,
-        y: o.y
-      }, {
-        x: n.x,
-        y: n.y
-      }], {
-          duration: 200,
-          iterations: 1,
-          fill: "forwards"
-        });
-      }
-    if (ox != nx || oy != ny ) {
-      updateEl(targetEl, {x: ox, y: oy},  {x: nx, y: ny});
-    }
 
+    if (ox != nx || oy != ny ) {
+      animateCirclePosition(pointer, {x: ox, y: oy},  {x: nx, y: ny});
+    }
   }
 
   handleLeave() {
@@ -79,8 +65,19 @@ export class Board {
       xt: this.getPos(x) + (this.lineSpace / 2),
       yt: this.getPos(y) + (this.lineSpace / 2),
       x: this.getPos(x),
-      y: this.getPos(y)
+      y: this.getPos(y),
     }));
+    const last = stones.sort((a, b) => b.order - a.order)[0];
+    const ghosts = this.ghosts.map(({state, x, y}, i) => {
+      return ({
+        color: state,
+        order: n2a(i),
+        xt: this.getPos(x) + (this.lineSpace / 2),
+        yt: this.getPos(y) + (this.lineSpace / 2),
+        x: this.getPos(x),
+        y: this.getPos(y),
+      });
+    });
 
     const markers: any[] = (this.overlay || [])
       .map(({x, y, ...marker}) => ({
@@ -118,6 +115,14 @@ export class Board {
       onMouseMove={e => this.handleOver(e)}
       viewBox={`${cvb.x} ${cvb.x} ${500 * zoomFactor} ${500 * zoomFactor}`}>
         <defs>
+        <filter id="wood_texture" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="5" seed="1" stitchTiles="stitch" result="turbulence"/>
+            <feDiffuseLighting surfaceScale="1" diffuseConstant="4" lighting-color="rgb(223, 178, 96)" in="turbulence" result="diffuseLighting">
+                  <feDistantLight azimuth="100" elevation="17"/>
+              </feDiffuseLighting>
+            <feComposite in="diffuseLighting" in2="SourceAlpha" operator="in" result="composite"/>
+            <feMorphology operator="erode" radius="1 15" x="0%" y="0%" width="100%" height="100%" in="composite" result="morphology"/>
+          </filter>
           <filter id="MyFilter" filterUnits="objectBoundingBox"
               x="0" y="0"
               width="100%" height="100%">
@@ -148,13 +153,24 @@ export class Board {
               <stop offset="100%" stop-color="#aaaaaa"/>
             </radialGradient>
           </defs>
-          <symbol id="target" width={this.lineSpace} height={this.lineSpace} viewBox="0 0 2 2">
+          <symbol
+            id="target"
+            width={this.lineSpace}
+            height={this.lineSpace}
+            viewBox="0 0 2 2">
           <circle cx="1" cy="1" r="0.5" fill="rgba(0,0,0,.3)"/>
+          </symbol>
+          <symbol
+            id="last"
+            width={this.lineSpace}
+            height={this.lineSpace}
+            viewBox="0 0 2 2">
+          <circle cx="1" cy="1" r="0.4" fill="rgba(250,150,150,.8)"/>
       </symbol>
-        {this.renderStoneSymbol("black")}
-        {this.renderStoneSymbol("white")}
-        {markers.length && this.renderMarkersSymbol() }
-        <path class="board" d={this.outerPath}></path>
+        {this.renderStoneSymbol(this.lineSpace, BLACK)}
+        {this.renderStoneSymbol(this.lineSpace, WHITE)}
+        {markers.length && this.renderMarkersSymbol(this.lineSpace) }
+        <path class="board" filter="url(#wood_texture)" d={this.outerPath}></path>
         <g class="lines">
             <path  d={this.innerPath}></path>
             {this.lines.map(d => <path d={d}></path>)}
@@ -162,10 +178,7 @@ export class Board {
         <g class="coords">{this.coordMarkers.map(({m, x, y}) => <text x={x} y={y}>{m}</text>)}</g>
         <g class="stones" filter="url(#MyFilter)">
           <path fill="transparent" d={this.outerPath}></path>
-          {stones.map(({color, x, y, xt, yt, order}) => <g class={color}>
-              <use xlinkHref={`#stone_${color}`} x={x}  y={y}/>
-              {this.options.order && order && <text x={xt} y={yt}>{order}</text>}
-            </g>)}
+          {stones.map((s) => this.renderStone(s))}
         </g>
         <g class="markers">
           <path fill="transparent" d={this.outerPath}></path>
@@ -176,6 +189,9 @@ export class Board {
             </g>)}
         </g>
         <use class="target" xlinkHref="#target" x={target.x} y={target.y}/>
+        {last && <use xlinkHref="#last" x={last.x} y={last.y}/>}
+        {ghosts.map(g => this.renderGhost(g))}
+
       </svg>
     );
   }
@@ -203,19 +219,16 @@ export class Board {
     return [...x, ...y];
   };
 
-  renderStoneSymbol(color: string) {
-    const size = this.lineSpace;
+  renderStoneSymbol(size: number, color: string) {
     return (
       <symbol id={`stone_${color}`} width={size} height={size} viewBox="0 0 2 2">
         <circle class={`stone ${color}`} cx="1" cy="1" r="0.9" fill={`url(#stone_grad_${color})`}/>
       </symbol>
     );
   }
-  renderMarkersSymbol() {
-    const size = this.lineSpace;
+  renderMarkersSymbol(size: number) {
     return (
       <g>
-
         <symbol id={`marker_circle_onempty`} width={size} height={size} viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="6" fill="none" strokeWidth="1" stroke="#000" opacity="0.7"/>
         </symbol>
@@ -251,5 +264,17 @@ export class Board {
     </g>
     );
   }
+  renderStone({color, x, y, xt, yt, order}) {
+    return <g class={color}>
+      <use xlinkHref={`#stone_${color}`} x={x}  y={y}/>
+      {this.options.order && order && <text x={xt} y={yt}>{order}</text>}
+    </g>
+  }
 
+  renderGhost({color, order, x, y, xt, yt}) {
+    return <g class={color}>
+      <use xlinkHref={`#stone_${color}`} x={x}  y={y} opacity="0.6"/>
+      <text x={xt} y={yt}>{order.toUpperCase()}</text>
+    </g>
+  }
 }

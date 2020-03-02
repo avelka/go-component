@@ -70,7 +70,7 @@
   transform: scale(.9);
   z-index:5;
 }
-.stone[data-color="BLACK"] {
+.stone[data-color="black"] {
   border: none;
   background: radial-gradient(
     circle at top left,
@@ -82,7 +82,7 @@
   inset -5px -5px 10px -5px rgb(0,0,0),
   2px 3px 5px 1px rgba(0,0,0, .6);
 }
-.stone[data-color="WHITE"] {
+.stone[data-color="white"] {
   border: none;
   background: radial-gradient(
     circle at top left,

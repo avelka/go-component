@@ -33,8 +33,8 @@ export const fromSGFCoord = (sgfnode: any) => {
 };
 
 export const EMPTY = null;
-export const BLACK = 'BLACK';
-export const WHITE = 'WHITE';
+export const BLACK = 'black';
+export const WHITE = 'white';
 
 export const MODE = {
   READ: 'READ',
@@ -83,11 +83,13 @@ export const extractVariations = (tree, path = [], lvl = 0, order = 0) => {
   const [main, variations = []] = tree;
   const branch = path && path[lvl] || 0;
   const flat = main.map((m, o) => ({
-    ...m, order: o + order, source: {
+    ...m, order: o + order,
+    nextPositions: variations.map(v => v[0]),
+    source: {
       pos: order - 1,
       branch,
       level: lvl,
-      variations: variations.length
+
     }
   }))
 
@@ -232,4 +234,27 @@ export function dowloadAsSGF(game) {
     // For Firefox it is necessary to delay revoking the ObjectURL
     window.URL.revokeObjectURL(blobURL);
   }, 100);
+}
+
+export const animateCirclePosition = (circle, o, n) => {
+  circle.setAttribute("x", n.x);
+  circle.setAttribute("y", n.y);
+  circle.animate([{
+    x: o.x,
+    y: o.y
+  }, {
+    x: n.x,
+    y: n.y
+  }], {
+    duration: 200,
+    iterations: 1,
+    fill: "forwards"
+  });
+}
+
+export function getGhosts(path, pos) {
+  const current = path[pos];
+  const next = path[pos + 1];
+  const ghosts = current.nextPositions ? [...current.nextPositions, next] : [next];
+  return ghosts.filter(i => i).map(toMove);
 }

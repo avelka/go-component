@@ -10,7 +10,7 @@
 }
 .svgboard {
   display: block;
-  fill: rgb(223, 178, 96);
+  fill: #dfb260;
   min-width:50px;
   min-height: 50px;
   height: 100%;

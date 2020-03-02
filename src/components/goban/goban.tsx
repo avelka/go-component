@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts } from '../../utils/utils';
 import { BoardService } from 'kifu';
 
 import { MODE } from "../../utils/utils";
@@ -49,8 +49,7 @@ export class Goban {
   }
 
   @Listen('download')
-  dowloadGame(ev) {
-    const { type } = ev.detail;
+  dowloadGame() {
     dowloadAsSGF(this.party);
   }
 
@@ -117,7 +116,8 @@ export class Goban {
         boardState: this.bs.at(o.x, o.y).state || 'empty'
       }
     });
-    const score = getScore(this.board.history) ;
+    const score = getScore(this.board.history);
+
     return (
       <div class="goban">
         <gc-board
@@ -125,7 +125,8 @@ export class Goban {
           options={this.options}
           size={this.party.info.size}
           state={getBoardState(this.board.board)}
-          overlay={overlay}>
+          overlay={overlay}
+          ghosts={getGhosts(this.currentPath, this.currentPosition)}>
         </gc-board>
         <div class="controls">
           <gc-controls
