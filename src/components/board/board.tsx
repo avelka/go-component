@@ -187,6 +187,9 @@ export class Board {
           <path fill="transparent" d={this.outerPath}></path>
           {stones.map((s) => this.renderStone(s))}
         </g>
+
+        {ghosts.map((g, _, a) => this.renderGhost(g, a.length > 1))}
+        {last && <use xlinkHref="#last" x={last.x} y={last.y}/>}
         <g class="markers">
           <path fill="transparent" d={this.outerPath}></path>
           {markers.map(({state, label, boardState, x, y, xt, yt}) => <g>
@@ -195,9 +198,11 @@ export class Board {
               {label && <text class={`on${boardState}`} x={xt} y={yt}>{label}</text>}
             </g>)}
         </g>
+
+
+
         <use onClick={() => this.sendMove()} class="target" xlinkHref="#target" x={target.x} y={target.y}/>
-        {last && <use xlinkHref="#last" x={last.x} y={last.y}/>}
-        {ghosts.map((g, _, a) => this.renderGhost(g, a.length > 1))}
+
 
       </svg>
     );

@@ -82,15 +82,10 @@ export const isSamePosition = (
 export const extractVariations = (tree, path = [], lvl = 0, order = 0) => {
   const [main, variations = []] = tree;
   const branch = path && path[lvl] || 0;
-  const nextPositions = variations.reduce((l, v) => {
-    return [...l, ...v.filter(b => b.length)
-      .map(b => b[0])
-      .filter(b => !Array.isArray(b))];
-  }, []);
 
   const flat = main.map((m, o) => ({
     ...m, order: o + order,
-    nextPositions,
+    branchIndex: o,
     source: {
       treeRef: tree,
       pos: order - 1,
@@ -245,11 +240,13 @@ export const animateCirclePosition = (circle, o, n) => {
 }
 
 export function getGhosts(path, pos) {
-  const current = path[pos];
+  const { branchIndex, source: { treeRef } } = path[pos];
+  const isLastInbranch = branchIndex === (treeRef[0].length - 1);
   const next = path[pos + 1];
-  const ghosts = current.nextPositions && current.nextPositions.length
-    ? [...current.nextPositions]
-    : [next];
+  const variations = treeRef[1].map(i => i[0]).map(i => i[0]);
+  const ghosts = isLastInbranch
+    ? variations
+    : [treeRef[0][branchIndex + 1]];
   return ghosts.filter(i => i).map((g, i) => {
     const inPath = (g.B || g.W) === (next.B || next.W);
     return toMove({ ...g, inPath }, i);

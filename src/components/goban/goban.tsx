@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toMove, isSamePosition, toSGFObject, nextPlayer } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
 import { MODE } from "../../utils/utils";
@@ -43,12 +43,14 @@ export class Goban {
 
   @Listen('moveAttempt')
   handleMove(event: CustomEvent) {
-    const move = {
-      x: minMax(0, event.detail.x, this.party.info.size - 1),
-      y: minMax(0, event.detail.y, this.party.info.size - 1),
-      state: nextPlayer(this.currentPosition)
-    }
+
+    console.log('test', event)
     try {
+      const move = {
+        x: minMax(0, event.detail.x, this.party.info.size - 1),
+        y: minMax(0, event.detail.y, this.party.info.size - 1),
+        state: nextPlayer(this.currentPosition)
+      }
       this.rule.validate(this.board.board, move);
       this.updateTree(move);
     } catch (e) {
@@ -57,16 +59,27 @@ export class Goban {
   }
 
   updateTree(move: any) {
-   const {nextPositions: nexts, source: { treeRef }} = this.currentPath[this.currentPosition];
 
-   const exist = nexts.find(e => isSamePosition(toMove(e, 0), move));
 
-   const node = [[toSGFObject(move)], []];
-   if (nexts.length && !exist) {
-    treeRef[1] = [...treeRef[1], node];
-   } else {
-    treeRef[0] = [...treeRef[0], toSGFObject(move)];
-   }
+    const ghosts = getGhosts(this.currentPath, this.currentPosition)
+    const isNext = ghosts.findIndex(g => isSamePosition(g, move))
+    const { branchIndex, source: { treeRef, level }} = this.currentPath[this.currentPosition];
+    const isLastInbranch = branchIndex === (treeRef[0].length - 1);
+
+    if (isNext < 0) {
+      const node = [[toSGFObject(move)], []];
+      if (isLastInbranch && !treeRef[1].length) {
+        treeRef[0] = [...treeRef[0], toSGFObject(move)];
+      } else {
+        const start = treeRef[0].slice(0, branchIndex + 1);
+        const end = treeRef[0].slice(branchIndex + 1);
+        treeRef[0] = start;
+        treeRef[1] = [[end, [...treeRef[1]]], node];
+      }
+    }
+
+    const newVariation = [...this.variations.slice(0, level), isNext < 0 ? treeRef[1].length - 1 : isNext]
+    this.updatePosition({order: this.currentPosition + 1, variation: newVariation})
   }
 
   updateOptions(change: any) {
