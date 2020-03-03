@@ -82,14 +82,21 @@ export const isSamePosition = (
 export const extractVariations = (tree, path = [], lvl = 0, order = 0) => {
   const [main, variations = []] = tree;
   const branch = path && path[lvl] || 0;
+  const nextPositions = variations.reduce((l, v) => {
+    return [...l, ...v.filter(b => b.length)
+      .map(b => b[0])
+      .filter(b => !Array.isArray(b))];
+  }, []);
+
   const flat = main.map((m, o) => ({
     ...m, order: o + order,
-    nextPositions: variations.map(v => v[0]),
+    nextPositions,
     source: {
+      treeRef: tree,
       pos: order - 1,
       branch,
       level: lvl,
-
+      variations: variations.length,
     }
   }))
 
@@ -101,13 +108,6 @@ export const extractVariations = (tree, path = [], lvl = 0, order = 0) => {
 export function getCurrentPath(tree, path = []) {
   return extractVariations(tree, path);
 }
-
-/* function defaultPath(tree: any[]) {
-  const [main, variations] = tree;
-  return variations && variations.length
-    ? [...main, ...defaultPath(variations[0])]
-    : main;
-} */
 
 export function toTree(collection: any[], o: number = 0) {
   const [main, variations = []] = collection;
@@ -159,14 +159,6 @@ export function baseVariation(forks: any[]) {
     path
   }
 }
-
-/* export function compareBranch(a = [], b = []) {
-
-  const s = Math.min(a.length, b.length);
-  const sa = a.slice(0, s).join(":");
-  const sb = b.slice(0, s).join(":");
-  return s && sa === sb;
-} */
 
 export function compareBranch(current = [], test = []) {
 
@@ -255,6 +247,23 @@ export const animateCirclePosition = (circle, o, n) => {
 export function getGhosts(path, pos) {
   const current = path[pos];
   const next = path[pos + 1];
-  const ghosts = current.nextPositions ? [...current.nextPositions, next] : [next];
-  return ghosts.filter(i => i).map(toMove);
+  const ghosts = current.nextPositions && current.nextPositions.length
+    ? [...current.nextPositions]
+    : [next];
+  return ghosts.filter(i => i).map((g, i) => {
+    const inPath = (g.B || g.W) === (next.B || next.W);
+    return toMove({ ...g, inPath }, i);
+  });
+}
+
+export const cloneArray = (items: any[]) => items.map(item => Array.isArray(item) ? cloneArray(item) : item);
+
+export const toSGFObject = (move) => {
+  const color = move.state === BLACK ? 'B' : 'W';
+  const coord = '' + n2a(move.x) + n2a(move.y);
+  return { [color]: coord };
+}
+
+export const nextPlayer = pos => {
+  return pos % 2 ? WHITE : BLACK;
 }

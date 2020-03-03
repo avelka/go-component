@@ -1,6 +1,6 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts } from '../../utils/utils';
-import { BoardService } from 'kifu';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toMove, isSamePosition, toSGFObject, nextPlayer } from '../../utils/utils';
+import { BoardService, RuleService } from 'kifu';
 
 import { MODE } from "../../utils/utils";
 
@@ -11,6 +11,7 @@ import { MODE } from "../../utils/utils";
 })
 export class Goban {
   bs = new BoardService();
+  rule = new RuleService();
   @Prop() sgf = null;
   @Prop() currentPosition: number = 0;
   @State() variations: any = [0];
@@ -40,7 +41,35 @@ export class Goban {
     this.updateOptions(event.detail);
   }
 
-  updateOptions(change) {
+  @Listen('moveAttempt')
+  handleMove(event: CustomEvent) {
+    const move = {
+      x: minMax(0, event.detail.x, this.party.info.size - 1),
+      y: minMax(0, event.detail.y, this.party.info.size - 1),
+      state: nextPlayer(this.currentPosition)
+    }
+    try {
+      this.rule.validate(this.board.board, move);
+      this.updateTree(move);
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  updateTree(move: any) {
+   const {nextPositions: nexts, source: { treeRef }} = this.currentPath[this.currentPosition];
+
+   const exist = nexts.find(e => isSamePosition(toMove(e, 0), move));
+
+   const node = [[toSGFObject(move)], []];
+   if (nexts.length && !exist) {
+    treeRef[1] = [...treeRef[1], node];
+   } else {
+    treeRef[0] = [...treeRef[0], toSGFObject(move)];
+   }
+  }
+
+  updateOptions(change: any) {
     const newOptions = {
       ...this.options,
       ...change
@@ -205,10 +234,12 @@ export class Goban {
       const choices = current.variations - 1;
       const val = ((currentFork || nextFork.level) + inc);
       const branch = minMax(0, val, choices);
-      this.variations = [
+      const newVariation = [
         ...this.variations.slice(0, nextFork.level - 1),
         branch
       ];
+
+      this.variations = newVariation;
       this.currentPath = getCurrentPath(this.party.tree, this.variations)
     }
   }

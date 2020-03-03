@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element } from '@stencil/core';
+import { Component, h, Prop, Element, Event, EventEmitter } from '@stencil/core';
 import Debounce from 'debounce-decorator';
 import { minMax, animateCirclePosition, BLACK, WHITE, n2a } from '../../utils/utils';
 
@@ -18,6 +18,8 @@ export class Board {
   @Prop() state: any[] = [];
   @Prop() overlay: any[] = [];
   @Prop() ghosts: any[] = [];
+
+  @Event() moveAttempt:  EventEmitter;
 
   target = null;
 
@@ -49,6 +51,10 @@ export class Board {
     this.target = null;
   }
 
+  sendMove() {
+    this.moveAttempt.emit(this.target);
+  }
+
   getPosFromCoord(x:number, y:number) {
     const { width, top, left } = this.el.querySelector(".board").getClientRects()[0];
     const relSize = (v:number) => (this.width / width) * v;
@@ -68,10 +74,11 @@ export class Board {
       y: this.getPos(y),
     }));
     const last = stones.sort((a, b) => b.order - a.order)[0];
-    const ghosts = this.ghosts.map(({state, x, y}, i) => {
+    const ghosts = this.ghosts.map(({state, x, y, inPath}, i) => {
       return ({
         color: state,
         order: n2a(i),
+        inPath,
         xt: this.getPos(x) + (this.lineSpace / 2),
         yt: this.getPos(y) + (this.lineSpace / 2),
         x: this.getPos(x),
@@ -188,9 +195,9 @@ export class Board {
               {label && <text class={`on${boardState}`} x={xt} y={yt}>{label}</text>}
             </g>)}
         </g>
-        <use class="target" xlinkHref="#target" x={target.x} y={target.y}/>
+        <use onClick={() => this.sendMove()} class="target" xlinkHref="#target" x={target.x} y={target.y}/>
         {last && <use xlinkHref="#last" x={last.x} y={last.y}/>}
-        {ghosts.map(g => this.renderGhost(g))}
+        {ghosts.map((g, _, a) => this.renderGhost(g, a.length > 1))}
 
       </svg>
     );
@@ -271,10 +278,10 @@ export class Board {
     </g>
   }
 
-  renderGhost({color, order, x, y, xt, yt}) {
+  renderGhost({color, order, x, y, xt, yt, inPath}, showLetter) {
     return <g class={color}>
-      <use xlinkHref={`#stone_${color}`} x={x}  y={y} opacity="0.6"/>
-      <text x={xt} y={yt}>{order.toUpperCase()}</text>
+      <use xlinkHref={`#stone_${color}`} x={x}  y={y} opacity={inPath ? "0.7" : "0.4"}/>
+      {showLetter && <text x={xt} y={yt}>{order.toUpperCase()}</text>}
     </g>
   }
 }

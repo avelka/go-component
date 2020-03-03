@@ -107,6 +107,7 @@ declare global {
 declare namespace LocalJSX {
   interface GcBoard {
     'ghosts'?: any[];
+    'onMoveAttempt'?: (event: CustomEvent<any>) => void;
     'options'?: { order: boolean; zoom: number; };
     'overlay'?: any[];
     'size'?: number;
