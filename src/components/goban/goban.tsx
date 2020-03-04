@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
 import { MODE } from "../../utils/utils";
@@ -44,23 +44,31 @@ export class Goban {
   @Listen('moveAttempt')
   handleMove(event: CustomEvent) {
 
-    console.log('test', event)
     try {
       const move = {
         x: minMax(0, event.detail.x, this.party.info.size - 1),
         y: minMax(0, event.detail.y, this.party.info.size - 1),
         state: nextPlayer(this.currentPosition)
       }
-      this.rule.validate(this.board.board, move);
-      this.updateTree(move);
+      switch (this.options.mode) {
+        case MODE.EDIT:
+          this.editCurrent(move);
+          break;
+        case MODE.PLAY:
+        case MODE.READ:
+          this.rule.validate(this.board.board, move);
+          this.updateTree(move);
+          break;
+        default:
+          console.log(move)
+      }
+
     } catch (e) {
       console.error(e)
     }
   }
 
   updateTree(move: any) {
-
-
     const ghosts = getGhosts(this.currentPath, this.currentPosition)
     const isNext = ghosts.findIndex(g => isSamePosition(g, move))
     const { branchIndex, source: { treeRef, level }} = this.currentPath[this.currentPosition];
@@ -80,6 +88,18 @@ export class Goban {
 
     const newVariation = [...this.variations.slice(0, level), isNext < 0 ? treeRef[1].length - 1 : isNext]
     this.updatePosition({order: this.currentPosition + 1, variation: newVariation})
+  }
+
+  editCurrent({x, y}: any) {
+    const { branchIndex, source: { treeRef }} = this.currentPath[this.currentPosition];
+    const current = treeRef[0][branchIndex];
+    const type = this.options.marker;
+    const coord = n2a(x) + n2a(y);
+    const change = {[type]: [...(current[type] || []), coord ]};
+    treeRef[0][branchIndex] = {...current, ...change};
+    console.log({coord, change});
+
+    this.updatePosition({order: this.currentPosition});
   }
 
   updateOptions(change: any) {

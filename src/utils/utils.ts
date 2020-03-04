@@ -35,7 +35,22 @@ export const fromSGFCoord = (sgfnode: any) => {
 export const EMPTY = null;
 export const BLACK = 'black';
 export const WHITE = 'white';
-
+export const ATTR_SGF = {
+  COMMENT: 'C',
+  BLACK: 'B',
+  WHITE: 'B',
+  ADD_BLACK: 'AB',
+  ADD_WHITE: 'AW',
+  ADD_EMPTY: 'AE',
+  CIRCLE: 'CR',
+  TRIANGLE: 'TR',
+  SQUARE: 'SQ',
+  MARK: 'MA',
+  LINE: 'LN',
+  ARROW: 'AR',
+  LABEL: 'LB',
+  GHOST: 'DD'
+}
 export const MODE = {
   READ: 'READ',
   EDIT: 'EDIT',

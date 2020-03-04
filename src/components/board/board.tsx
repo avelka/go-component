@@ -23,7 +23,7 @@ export class Board {
 
   target = null;
 
-  width = 500;
+  width = 700;
   padding = 20;
   innerGridSize = this.width - this.padding;
   outerPath = `M 0, 0 H ${this.width} V ${this.width} H 0 V 0`;
@@ -52,6 +52,7 @@ export class Board {
   }
 
   sendMove() {
+    console.log('hey')
     this.moveAttempt.emit(this.target);
   }
 
@@ -116,11 +117,11 @@ export class Board {
       <svg
       class="svgboard"
       tabIndex={0}
-      width="500"
-      height="500"
+      width={this.width}
+      height={this.width}
       onMouseLeave={() => this.handleLeave()}
       onMouseMove={e => this.handleOver(e)}
-      viewBox={`${cvb.x} ${cvb.x} ${500 * zoomFactor} ${500 * zoomFactor}`}>
+      viewBox={`${cvb.x} ${cvb.x} ${this.width * zoomFactor} ${this.width * zoomFactor}`}>
         <defs>
         <filter id="wood_texture" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
             <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="5" seed="1" stitchTiles="stitch" result="turbulence"/>

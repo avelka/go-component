@@ -2,18 +2,18 @@
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 div {
-  background: rgba(0,0,0,.3);
-  border-radius:2em;
+  background: var(--gc-bg-dark);
   padding:.5em;
   margin: .5em;
+  border-radius: var(--gc-radius);
   height: calc(100% - 2.5em)
 }
 p {
   display: flex;
   align-items: center;
-  background: rgba(0,0,0,.3);
-  border-radius:2em;
+  background: var(--gc-bg-dark);
+  border-radius: var(--gc-radius);
   padding:.5em;
   margin: .5em;
-  color: #ddd;
+  color: var(--gc-txt-dark);
 }
