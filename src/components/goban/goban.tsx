@@ -1,8 +1,7 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
-import { MODE } from "../../utils/utils";
 
 @Component({
   tag: 'gc-goban',
@@ -18,12 +17,12 @@ export class Goban {
   @Prop() options: any = {
     play: false,
     showOrder: false,
-    edit: false,
-    nav: true,
-    tree: true,
-    interval: 5,
+    interval: 1,
     mode: MODE.READ,
-    zoom: 100
+    zoom: 100,
+    comments: false,
+    controls: false,
+    tree: false,
   };
 
   party = parse(this.sgf);
@@ -95,19 +94,30 @@ export class Goban {
     const current = treeRef[0][branchIndex];
     const type = this.options.marker;
     const coord = n2a(x) + n2a(y);
-    const change = {[type]: [...(current[type] || []), coord ]};
-    treeRef[0][branchIndex] = {...current, ...change};
-    console.log({coord, change});
+    // AE : empty should be filtered out on board (but only ghosted in edit mode)
+
+    const COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
+
+    const different = i => i !== coord;
+    const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
+
+    if (COMPOSED_UNIQUE.includes(type)) {
+      const unified = COMPOSED_UNIQUE.reduce(unify ,{});
+      const change = {...unified, [type]: [...(unified[type] || []), coord ]};
+      treeRef[0][branchIndex] = {...current, ...change};
+    } else {
+      const change = {[type]: [...(current[type] || []), coord ]};
+      treeRef[0][branchIndex] = {...current, ...change};
+    }
 
     this.updatePosition({order: this.currentPosition});
   }
 
   updateOptions(change: any) {
-    const newOptions = {
+    this.options = {
       ...this.options,
       ...change
     };
-    this.options = newOptions;
   }
 
   @Listen('download')
@@ -121,6 +131,7 @@ export class Goban {
       case 'd':
         console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
         break;
+
       case 'ArrowDown':
       case 'ArrowUp':
         const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
@@ -132,13 +143,33 @@ export class Goban {
         const speed:number = ev.shiftKey ? 10 : 1;
         this.updatePosition({order: this.currentPosition + dir * speed });
         break;
-      case 'n':
-      case 'N':
+      case 'o':
+      case 'O':
         this.updateOptions({order: !this.options.order});
         break;
       case 't':
       case 'T':
         this.updateOptions({tree: !this.options.tree});
+        break;
+      case 'n':
+      case 'N':
+        this.updateOptions({controls: !this.options.controls});
+        break;
+      case 'c':
+      case 'C':
+        this.updateOptions({comments: !this.options.comments});
+        break;
+      case 'e':
+      case 'E':
+        this.updateOptions({mode: MODE.EDIT});
+        break;
+      case 'p':
+      case 'P':
+        this.updateOptions({mode: MODE.PLAY});
+        break;
+      case 'r':
+      case 'R':
+        this.updateOptions({mode: MODE.READ});
         break;
       case ' ':
         this.updateOptions({play: !this.options.play});
@@ -196,20 +227,22 @@ export class Goban {
             score={score}
             options={this.options}
             variations={this.variations}
+            history={this.currentPath}
             position={this.currentPosition}>
           </gc-controls>
-          <gc-comments
-            class="comments"
-            position={this.currentPosition}
-            path={this.currentPath}>
-          </gc-comments>
+          { this.options.comments &&
+            <gc-comments
+              class="comments"
+              position={this.currentPosition}
+              path={this.currentPath}>
+            </gc-comments> }
           { this.options.tree &&
-          <gc-tree class="tree"
-            variations={this.variations}
-            tree={this.party.tree}
-            current={this.currentPath}
-            position={this.currentPosition}>
-          </gc-tree> }
+            <gc-tree class="tree"
+              variations={this.variations}
+              tree={this.party.tree}
+              current={this.currentPath}
+              position={this.currentPosition}>
+            </gc-tree> }
         </div>
       </div>
     );

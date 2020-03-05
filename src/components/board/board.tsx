@@ -52,7 +52,6 @@ export class Board {
   }
 
   sendMove() {
-    console.log('hey')
     this.moveAttempt.emit(this.target);
   }
 
@@ -60,7 +59,6 @@ export class Board {
     const { width, top, left } = this.el.querySelector(".board").getClientRects()[0];
     const relSize = (v:number) => (this.width / width) * v;
     const pos = (n:number) => Math.ceil((relSize(n) - this.padding - (this.lineSpace / 2)) / this.lineSpace);
-
     return {x: pos(x + -(left)), y:pos(y + -(top))};
   }
 
@@ -161,20 +159,20 @@ export class Board {
               <stop offset="100%" stop-color="#aaaaaa"/>
             </radialGradient>
           </defs>
-          <symbol
-            id="target"
-            width={this.lineSpace}
-            height={this.lineSpace}
-            viewBox="0 0 2 2">
-          <circle cx="1" cy="1" r="0.5" fill="rgba(0,0,0,.3)"/>
-          </symbol>
-          <symbol
-            id="last"
-            width={this.lineSpace}
-            height={this.lineSpace}
-            viewBox="0 0 2 2">
+        <symbol
+          id="target"
+          width={this.lineSpace}
+          height={this.lineSpace}
+          viewBox="0 0 2 2">
+        <circle cx="1" cy="1" r="0.5" fill="rgba(0,0,0,.3)"/>
+        </symbol>
+        <symbol
+          id="last"
+          width={this.lineSpace}
+          height={this.lineSpace}
+          viewBox="0 0 2 2">
           <circle cx="1" cy="1" r="0.4" fill="rgba(250,150,150,.8)"/>
-      </symbol>
+        </symbol>
         {this.renderStoneSymbol(this.lineSpace, BLACK)}
         {this.renderStoneSymbol(this.lineSpace, WHITE)}
         {markers.length && this.renderMarkersSymbol(this.lineSpace) }
@@ -199,12 +197,7 @@ export class Board {
               {label && <text class={`on${boardState}`} x={xt} y={yt}>{label}</text>}
             </g>)}
         </g>
-
-
-
         <use onClick={() => this.sendMove()} class="target" xlinkHref="#target" x={target.x} y={target.y}/>
-
-
       </svg>
     );
   }
@@ -251,6 +244,9 @@ export class Board {
         <symbol id={`marker_square_onempty`} width={size} height={size} viewBox="0 0 20 20">
           <rect x="5" y="5" width="10" height="10" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
         </symbol>
+        <symbol id={`marker_mark_onempty`} width={size} height={size} viewBox="0 0 20 20">
+          <path d="M 5 5 L 15 15 M 5 15 L 15 5" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
+        </symbol>
 
         <symbol id={`marker_circle_onblack`} width={size} height={size} viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="6" fill="none" strokeWidth="1" stroke="#fff" opacity="0.7"/>
@@ -261,7 +257,9 @@ export class Board {
         <symbol id={`marker_square_onblack`} width={size} height={size} viewBox="0 0 20 20">
           <rect x="5" y="5" width="10" height="10" fill="transparent" strokeWidth="1" stroke="#fff" opacity="0.7"/>
         </symbol>
-
+        <symbol id={`marker_mark_onblack`} width={size} height={size} viewBox="0 0 20 20">
+          <path d="M 5 5 L 15 15 M 5 15 L 15 5" fill="transparent" strokeWidth="1" stroke="#fff" opacity="0.7"/>
+        </symbol>
         <symbol id={`marker_circle_onwhite`} width={size} height={size} viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="6" fill="none" strokeWidth="1" stroke="#000" opacity="0.7"/>
         </symbol>
@@ -270,6 +268,9 @@ export class Board {
         </symbol>
         <symbol id={`marker_square_onwhite`} width={size} height={size} viewBox="0 0 20 20">
           <rect x="5" y="5" width="10" height="10" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
+        </symbol>
+        <symbol id={`marker_mark_onwhite`} width={size} height={size} viewBox="0 0 20 20">
+          <path d="M 5 5 L 15 15 M 5 15 L 15 5" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
         </symbol>
         <symbol id={`marker_label_onempty`} width={size} height={size} viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="6" fill="rgb(223, 178, 96)"/>
