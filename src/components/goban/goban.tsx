@@ -100,16 +100,24 @@ export class Goban {
 
     const different = i => i !== coord;
     const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
-
-    if (COMPOSED_UNIQUE.includes(type)) {
-      const unified = COMPOSED_UNIQUE.reduce(unify ,{});
-      const change = {...unified, [type]: [...(unified[type] || []), coord ]};
-      treeRef[0][branchIndex] = {...current, ...change};
-    } else {
-      const change = {[type]: [...(current[type] || []), coord ]};
-      treeRef[0][branchIndex] = {...current, ...change};
+    let change;
+    switch (true) {
+      case COMPOSED_UNIQUE.includes(type):
+        const unified = COMPOSED_UNIQUE.reduce(unify ,{});
+        change = {...unified, [type]: [...(unified[type] || []), coord ]};
+        treeRef[0][branchIndex] = {...current, ...change};
+        break;
+      case type === ATTR_SGF.LABEL:
+        const labels = (current[type] || []);
+        // TODO: clean/remove/edit
+        const newLabel = [coord, n2a(labels.length).toUpperCase()]
+        change = {[type]: [...labels, newLabel ]};
+        break;
+      default:
+        change = {[type]: [...(current[type] || []), coord ]};
     }
 
+    treeRef[0][branchIndex] = {...current, ...change}
     this.updatePosition({order: this.currentPosition});
   }
 
