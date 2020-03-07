@@ -2,7 +2,9 @@ import { Component, Prop, State, h, Listen } from '@stencil/core';
 import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
-const COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
+const STONE_COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
+const SYMBOL_COMPOSED_UNIQUE = [ATTR_SGF.CIRCLE, ATTR_SGF.SQUARE, ATTR_SGF.TRIANGLE, ATTR_SGF.MARK];
+
 
 @Component({
   tag: 'gc-goban',
@@ -97,7 +99,7 @@ export class Goban {
     // AE : empty should be filtered out on board (but only ghosted in edit mode)
     let change: any;
     switch (true) {
-      case COMPOSED_UNIQUE.includes(type):
+      case STONE_COMPOSED_UNIQUE.includes(type):
         change = this.setStone({current, type, coord})
         break;
       case type === ATTR_SGF.LABEL_ALPHA:
@@ -105,9 +107,13 @@ export class Goban {
         break;
       case type === ATTR_SGF.LABEL_NUMERIC:
         change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: numericLabelGenerator });
+        console.log(change);
         break;
+      case SYMBOL_COMPOSED_UNIQUE.includes(type):
+        change = this.setMarker({current, type, coord});
       default:
-      change = this.setMarker({current, type, coord});
+        console.log({STONE_COMPOSED_UNIQUE, type})
+
     }
 
     treeRef[0][branchIndex] = {...current, ...change}
@@ -121,7 +127,9 @@ export class Goban {
     if (filteredLabels.length < labels.length) {
       return {[type]: filteredLabels};
     }
-    return {[type]: [...(current[type] || []), coord ]};
+    const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
+    const unified = SYMBOL_COMPOSED_UNIQUE.reduce(unify ,{});
+    return {...unified, [type]: [...(unified[type] || []), coord ]};
   }
 
   setStone({current, type, coord}) {
@@ -134,7 +142,7 @@ export class Goban {
     if (filteredLabels.length < labels.length) {
       return {[type]: filteredLabels};
     }
-    const unified = COMPOSED_UNIQUE.reduce(unify ,{});
+    const unified = STONE_COMPOSED_UNIQUE.reduce(unify ,{});
     return {...unified, [type]: [...(unified[type] || []), coord ]};
   }
 

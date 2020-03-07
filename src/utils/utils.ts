@@ -287,11 +287,11 @@ export function alphabetLabelGenerator(labels: any[]) {
     .map(e => e[1].toLowerCase())));
   return alphabet(alpha.length + 1).find((l: string) => !alpha.includes(l)).toUpperCase();
 }
-const numberList = size => Array(size).map((_, i) => i + 1);
+const numberList = size => Array(size).fill(null).map((_, i) => i + 1);
 
 export function numericLabelGenerator(labels: any[]) {
   const num = Array.from(new Set(labels
     .filter((e: any) => /[\d]{1,2}/i.test(e[1]))
-    .map(e => e[1].toLowerCase())));
-  return numberList(num.length + 1).find((l: number) => !num.includes(l));
+    .map(e => e[1])));
+  return numberList(num.length + 1).find((l: number) => !num.includes(l)) || 1;
 }
