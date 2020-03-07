@@ -23,10 +23,7 @@ import zoom0 from '../../assets/control_zoom_out.svg';
 import addBlack from '../../assets/marker_black.svg';
 import addWhite from '../../assets/marker_white.svg';
 import addEmpty from '../../assets/marker_empty.svg';
-import remove from '../../assets/marker_remove.svg';
-/*
-import arrow from '../../assets/marker_remove.svg';
-import line from '../../assets/marker_remove.svg'; */
+
 import addLabelAlpha from '../../assets/marker_label_alpha.svg';
 import addLabelFree from '../../assets/marker_label_free.svg';
 
@@ -46,9 +43,9 @@ const markers = [
   [ATTR_SGF.ADD_BLACK, addBlack, 'Add black'],
   [ATTR_SGF.ADD_WHITE, addWhite, 'Add white'],
   [ATTR_SGF.ADD_EMPTY, addEmpty, 'Add empty'],
-  [ATTR_SGF.LABEL, addLabelAlpha, 'Add label'],
-  [ATTR_SGF.LABEL, addLabelFree, 'Add label'],
-  [null, remove, 'Delete marker'],
+  [ATTR_SGF.LABEL_ALPHA, addLabelAlpha, 'Add alphabetic label '],
+  [ATTR_SGF.LABEL_NUMERIC, addLabelFree, 'Add number label '],
+  /* [ATTR_SGF.LABEL, addLabelFree, 'Add label'], */
 
 ];
 

@@ -10,8 +10,10 @@ export class Comments {
   @Prop() path = [];
   @Prop() position = 0;
   render() {
-    console.log(this.path);
-    const comments = this.path.sort((a, b) => a.order - b.order).slice(0, this.position).filter(m => m[ATTR_SGF.COMMENT])
+    const comments = this.path
+    .sort((a, b) => a.order - b.order)
+    .slice(0, this.position)
+    .filter(m => m[ATTR_SGF.COMMENT])
     return (
       <div>
         {comments.map(m => <p>

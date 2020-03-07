@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
 
@@ -107,11 +107,11 @@ export class Goban {
         change = {...unified, [type]: [...(unified[type] || []), coord ]};
         treeRef[0][branchIndex] = {...current, ...change};
         break;
-      case type === ATTR_SGF.LABEL:
-        const labels = (current[type] || []);
-        // TODO: clean/remove/edit
-        const newLabel = [coord, n2a(labels.length).toUpperCase()]
-        change = {[type]: [...labels, newLabel ]};
+      case type === ATTR_SGF.LABEL_ALPHA:
+        change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: alphabetLabelGenerator });
+        break;
+      case type === ATTR_SGF.LABEL_NUMERIC:
+        change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: numericLabelGenerator });
         break;
       default:
         change = {[type]: [...(current[type] || []), coord ]};
@@ -119,6 +119,21 @@ export class Goban {
 
     treeRef[0][branchIndex] = {...current, ...change}
     this.updatePosition({order: this.currentPosition});
+  }
+
+
+
+  setLabel({type, current, coord, generator}) {
+
+    const labels = (current[type] || []);
+    const filteredLabels = labels.filter(([lcoord]) => lcoord !== coord);
+
+    if (filteredLabels.length < labels.length) {
+      return {[type]: filteredLabels};
+    }
+
+    const newLabel = [coord, generator(labels)];
+    return {[type]: [...labels, newLabel ]};
   }
 
   updateOptions(change: any) {
@@ -139,7 +154,6 @@ export class Goban {
       case 'd':
         console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
         break;
-
       case 'ArrowDown':
       case 'ArrowUp':
         const inc: number = ev.key == 'ArrowUp' ? -1 : 1;

@@ -49,6 +49,8 @@ export const ATTR_SGF = {
   LINE: 'LN',
   ARROW: 'AR',
   LABEL: 'LB',
+  LABEL_ALPHA: 'LB_ALPHA',
+  LABEL_NUMERIC: 'LB_NUMERIC',
   GHOST: 'DD'
 }
 export const MODE = {
@@ -213,7 +215,6 @@ export function parse(sgf: any) {
 
 export function dowloadAsSGF(game) {
   const sgf = sgfgrove.stringify([game.tree]);
-  console.log(sgf, game.tree);
   const blob = new Blob([sgf], { type: 'application/x-go-sgf' })
   // Other browsers
   // Create a link pointing to the ObjectURL containing the blob
@@ -278,4 +279,19 @@ export const toSGFObject = (move) => {
 
 export const nextPlayer = pos => {
   return pos % 2 ? WHITE : BLACK;
+}
+
+export function alphabetLabelGenerator(labels: any[]) {
+  const alpha = Array.from(new Set(labels
+    .filter((e: any) => /[A-Z]{1}/i.test(e[1]))
+    .map(e => e[1].toLowerCase())));
+  return alphabet(alpha.length + 1).find((l: string) => !alpha.includes(l)).toUpperCase();
+}
+const numberList = size => Array(size).map((_, i) => i + 1);
+
+export function numericLabelGenerator(labels: any[]) {
+  const num = Array.from(new Set(labels
+    .filter((e: any) => /[\d]{1,2}/i.test(e[1]))
+    .map(e => e[1].toLowerCase())));
+  return numberList(num.length + 1).find((l: number) => !num.includes(l));
 }
