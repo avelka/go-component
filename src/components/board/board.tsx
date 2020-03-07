@@ -52,6 +52,7 @@ export class Board {
   }
 
   sendMove() {
+
     this.moveAttempt.emit(this.target);
   }
 

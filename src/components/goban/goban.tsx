@@ -2,6 +2,7 @@ import { Component, Prop, State, h, Listen } from '@stencil/core';
 import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
+const COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
 
 @Component({
   tag: 'gc-goban',
@@ -49,6 +50,7 @@ export class Goban {
         y: minMax(0, event.detail.y, this.party.info.size - 1),
         state: nextPlayer(this.currentPosition)
       }
+
       switch (this.options.mode) {
         case MODE.EDIT:
           this.editCurrent(move);
@@ -58,8 +60,6 @@ export class Goban {
           this.rule.validate(this.board.board, move);
           this.updateTree(move);
           break;
-        default:
-          console.log(move)
       }
 
     } catch (e) {
@@ -95,17 +95,10 @@ export class Goban {
     const type = this.options.marker;
     const coord = n2a(x) + n2a(y);
     // AE : empty should be filtered out on board (but only ghosted in edit mode)
-
-    const COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
-
-    const different = i => i !== coord;
-    const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
-    let change;
+    let change: any;
     switch (true) {
       case COMPOSED_UNIQUE.includes(type):
-        const unified = COMPOSED_UNIQUE.reduce(unify ,{});
-        change = {...unified, [type]: [...(unified[type] || []), coord ]};
-        treeRef[0][branchIndex] = {...current, ...change};
+        change = this.setStone({current, type, coord})
         break;
       case type === ATTR_SGF.LABEL_ALPHA:
         change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: alphabetLabelGenerator });
@@ -114,19 +107,41 @@ export class Goban {
         change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: numericLabelGenerator });
         break;
       default:
-        change = {[type]: [...(current[type] || []), coord ]};
+      change = this.setMarker({current, type, coord});
     }
 
     treeRef[0][branchIndex] = {...current, ...change}
     this.updatePosition({order: this.currentPosition});
   }
 
+  setMarker({type, current, coord}) {
+    const labels = (current[type] || []);
+    const different = i => i !== coord;
+    const filteredLabels = labels.filter(different);
+    if (filteredLabels.length < labels.length) {
+      return {[type]: filteredLabels};
+    }
+    return {[type]: [...(current[type] || []), coord ]};
+  }
 
+  setStone({current, type, coord}) {
 
-  setLabel({type, current, coord, generator}) {
+    const different = i => i !== coord;
+    const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
 
     const labels = (current[type] || []);
-    const filteredLabels = labels.filter(([lcoord]) => lcoord !== coord);
+    const filteredLabels = labels.filter(different);
+    if (filteredLabels.length < labels.length) {
+      return {[type]: filteredLabels};
+    }
+    const unified = COMPOSED_UNIQUE.reduce(unify ,{});
+    return {...unified, [type]: [...(unified[type] || []), coord ]};
+  }
+
+  setLabel({type, current, coord, generator}) {
+    const different = ([i]) => i !== coord;
+    const labels = (current[type] || []);
+    const filteredLabels = labels.filter(different);
 
     if (filteredLabels.length < labels.length) {
       return {[type]: filteredLabels};
