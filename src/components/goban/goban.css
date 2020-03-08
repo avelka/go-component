@@ -1,9 +1,11 @@
 .goban {
   display: grid;
+  overflow: hidden;
+  position: relative;
   background: var(--gc-bg);
   height:100%;
-  grid-template-areas: 'board controls';
-  grid-template-columns: minmax(max-content, 100vh) minmax(300px, calc(100vw - 100vh));
+  grid-template-areas: 'board' 'controls';
+  grid-template-rows: 1fr 3em;
   transition: .3s ease-in-out all;
 }
 .goboard {
@@ -13,17 +15,30 @@
   place-self: stretch;
   height: 100%;
 }
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0em);
+  }
+}
 .tree {
-  grid-area: tree;
-  overflow: auto;
+  position: absolute;
+  animation: slideIn .5s ease-in-out forwards;
+  width: 100%;
+  height: calc(100% - 3em);
+  background: linear-gradient(var(--gc-bg-80) 50%, transparent);
 }
 .controls {
+  z-index: 5;
   grid-area: controls;
-  display: flex;
-  flex-flow: column;
-
 }
 .comments {
- flex: 1;
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 3em);
 }
 

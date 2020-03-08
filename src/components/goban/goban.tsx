@@ -269,8 +269,9 @@ export class Goban {
           overlay={overlay}
           ghosts={getGhosts(this.currentPath, this.currentPosition)}>
         </gc-board>
-        <div class="controls">
+
           <gc-controls
+            class="controls"
             data={meta}
             score={score}
             options={this.options}
@@ -291,7 +292,6 @@ export class Goban {
               current={this.currentPath}
               position={this.currentPosition}>
             </gc-tree> }
-        </div>
       </div>
     );
   }

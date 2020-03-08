@@ -2,18 +2,27 @@
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 div {
-  background: var(--gc-bg-dark);
-  padding:.5em;
-  margin: .5em;
-  border-radius: var(--gc-radius);
-  height: calc(100% - 2.5em)
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(3em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0em);
+  }
 }
 p {
-  display: flex;
+  animation: slideIn .5s ease-in-out forwards;
+  display: inline-flex;
   align-items: center;
-  background: var(--gc-bg-dark);
+  background: var(--gc-bg-50);
   border-radius: var(--gc-radius);
   padding:.5em;
   margin: .5em;
-  color: var(--gc-txt-dark);
+  color: var(--gc-txt-light);
 }

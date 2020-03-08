@@ -10,15 +10,20 @@
       height: 100%;
     }
     .goban {
-      height: 100vh;
+      display: block;
+      width: 500px;
     }
     :root {
       --gc-font: Verdana, Geneva, Tahoma, sans-serif;
       --gc-radius: 5px;
-      --gc-bg: #5D6E6C;
+      --gc-bg-rgb: 93, 110, 108;
+      --gc-bg: rgb(var(--gc-bg-rgb));
+      --gc-bg-80: rgba(var(--gc-bg-rgb), 0.8);
+      --gc-bg-50: rgba(var(--gc-bg-rgb), 0.5);
+      --gc-bg-20: rgba(var(--gc-bg-rgb), 0.2);
       --gc-bg-dark: #383432;
-      --gc-bg-light: #7EC9B5;
-      --gc-bg-board: #E0C364;
+      --gc-bg-light: #7EC9B5; /* rgb(97, 143, 212); */
+      --gc-bg-board: #ebce6f;
       --gc-line: #383432;
       --gc-txt-dark: #ddd;
       --gc-txt-light: #383432;
@@ -48,6 +53,7 @@
         inset -5px -5px 10px -5px rgb(0,0,0),
         2px 3px 5px -2px rgba(0,0,0, .6);
       --gc-white-stone-txt: #555;
+      --gc-container-radius: 0px;
     }
   </style>
   <script type="module" src="/build/goboard.esm.js"></script>

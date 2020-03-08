@@ -261,17 +261,23 @@ export const animateCirclePosition = (circle, o, n) => {
 }
 
 export function getGhosts(path, pos) {
-  const { branchIndex, source: { treeRef } } = path[pos];
-  const isLastInbranch = branchIndex === (treeRef[0].length - 1);
-  const next = path[pos + 1];
-  const variations = treeRef[1].map(i => i[0]).map(i => i[0]);
-  const ghosts = isLastInbranch
-    ? variations
-    : [treeRef[0][branchIndex + 1]];
-  return ghosts.filter(i => i).map((g, i) => {
-    const inPath = (g.B || g.W) === (next.B || next.W);
-    return toMove({ ...g, inPath }, i);
-  });
+  try {
+    const { branchIndex, source: { treeRef } } = path[pos];
+    const isLastInbranch = branchIndex === (treeRef[0].length - 1);
+    const next = path[pos + 1];
+    const variations = treeRef[1].map(i => i[0]).map(i => i[0]);
+    const ghosts = isLastInbranch
+      ? variations
+      : [treeRef[0][branchIndex + 1]];
+    return ghosts.filter(i => i).map((g, i) => {
+      const inPath = (g.B || g.W) === (next.B || next.W);
+      return toMove({ ...g, inPath }, i);
+    });
+  } catch (e) {
+    console.error(e);
+    return [];
+  }
+
 }
 
 export const cloneArray = (items: any[]) => items.map(item => Array.isArray(item) ? cloneArray(item) : item);

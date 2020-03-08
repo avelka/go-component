@@ -128,56 +128,79 @@ export class Controls {
 
     return (
       <section>
-        <header class="players-container">
-          {players.map(p => <Player {...p} isTurn={isTurn}></Player>)}
-        </header>
-        { this.options.controls &&
-          (<div>
-
-            <nav>
-              <button type="button" onClick={() => this.prev()}><img src={first}/></button>
-              <button type="button" onClick={() => this.prev()}><img src={prev}/></button>
-              <button type="button"
-                disabled={this.options.mode !== MODE.READ}
-                data-enabled={this.options.play}
-                onClick={() => this.playPause()}>
-              {this.options.play ? <img src={pause}/> : <img src={play}/>}
-              </button>
-              <button type="button" onClick={() => this.next()}>
-                <img src={next}/>
-              </button>
-              <button type="button" onClick={() => this.prev()}><img src={last}/></button>
-            </nav>
-            <nav>
-              <button type="button" data-enabled={this.options.order} onClick={() => this.toggleNumber()}>
-                <img src={number}/>
-              </button>
-              <button type="button" data-enabled={this.options.tree} onClick={() => this.toggleTree()}>
-                <img src={tree}/>
-              </button>
-              <button type="button" data-enabled={this.options.comments} onClick={() => this.toggleComments()}>
-                <img src={comments}/>
-              </button>
-              <button type="button" onClick={() => this.getSGF()}>
-                <img src={download}/>
-              </button>
-            </nav>
-            {this.options.mode === MODE.EDIT
-            && <nav>
-              { markers.map(([mk, icn, title]) => <MarkerButton
-                title={title}
-                icon={icn}
-                selected={mk === this.options.marker}
-                onAction={v => this.selectMarker(v)}
-                marker={mk} />)}
-            </nav>}
-          </div>)
-        }
+        {players.map(p => <Player {...p} isTurn={isTurn}></Player>)}
+        <div>
+          <div class="player-names">{players.map(({name, level}) => <span>{`${name} (${level ? level : '-'})`}</span>)}</div>
+          { this.renderReadBar() }
+          { this.renderEditBar() }
+        </div>
       </section>
 
     );
   }
 
+  renderEditBar() {
+    return <nav>
+      { markers.map(([mk, icn, title]) => <MarkerButton
+        title={title}
+        icon={icn}
+        selected={mk === this.options.marker}
+        onAction={v => this.selectMarker(v)}
+        marker={mk} />)}
+    </nav>
+  }
+
+  renderReadBar() {
+    return <nav>
+      <button
+        type="button"
+        onClick={() => this.first()}>
+          <img src={first}/>
+      </button>
+      <button
+        type="button"
+        onClick={() => this.prev()}>
+          <img src={prev}/>
+      </button>
+      <button
+        type="button"
+        disabled={this.options.mode !== MODE.READ}
+        data-enabled={this.options.play}
+        onClick={() => this.playPause()}>
+        {this.options.play ? <img src={pause}/> : <img src={play}/>}
+      </button>
+      <button
+        type="button"
+        onClick={() => this.next()}>
+        <img src={next}/>
+      </button>
+      <button
+        type="button"
+        onClick={() => this.last()}>
+        <img src={last}/>
+      </button>
+      <button
+        type="button"
+        data-enabled={this.options.order}
+        onClick={() => this.toggleNumber()}>
+        <img src={number}/>
+      </button>
+      <button type="button"
+        data-enabled={this.options.tree}
+        onClick={() => this.toggleTree()}>
+        <img src={tree}/>
+      </button>
+      <button
+        type="button"
+        data-enabled={this.options.comments}
+        onClick={() => this.toggleComments()}>
+        <img src={comments}/>
+      </button>
+      <button type="button" onClick={() => this.getSGF()}>
+        <img src={download}/>
+      </button>
+    </nav>;
+  }
 }
 
 

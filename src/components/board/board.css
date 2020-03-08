@@ -1,13 +1,13 @@
+:host {
+  max-height: 100vh;
+  overflow: hidden;
+}
 .lines {
   stroke: var(--gc-line);
   stroke-width: 1;
   fill: none
 }
-:host {
-  overflow: auto;
-  max-height: 100vh;
-  overflow: hidden;
-}
+
 .svgboard {
   display: block;
   min-width:50px;
