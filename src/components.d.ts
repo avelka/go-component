@@ -12,7 +12,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 export namespace Components {
   interface GcBoard {
     'ghosts': any[];
-    'options': { order: boolean; zoom: number; };
+    'options': { order: boolean; zoom: number; style: { texture: boolean; }; };
     'overlay': any[];
     'size': number;
     'state': any[];
@@ -39,20 +39,6 @@ export namespace Components {
     'position': number;
     'tree': any[];
     'variations': any[];
-  }
-  interface MyComponent {
-    /**
-    * The first name
-    */
-    'first': string;
-    /**
-    * The last name
-    */
-    'last': string;
-    /**
-    * The middle name
-    */
-    'middle': string;
   }
 }
 
@@ -88,19 +74,12 @@ declare global {
     prototype: HTMLGcTreeElement;
     new (): HTMLGcTreeElement;
   };
-
-  interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {}
-  var HTMLMyComponentElement: {
-    prototype: HTMLMyComponentElement;
-    new (): HTMLMyComponentElement;
-  };
   interface HTMLElementTagNameMap {
     'gc-board': HTMLGcBoardElement;
     'gc-comments': HTMLGcCommentsElement;
     'gc-controls': HTMLGcControlsElement;
     'gc-goban': HTMLGcGobanElement;
     'gc-tree': HTMLGcTreeElement;
-    'my-component': HTMLMyComponentElement;
   }
 }
 
@@ -108,7 +87,7 @@ declare namespace LocalJSX {
   interface GcBoard {
     'ghosts'?: any[];
     'onMoveAttempt'?: (event: CustomEvent<any>) => void;
-    'options'?: { order: boolean; zoom: number; };
+    'options'?: { order: boolean; zoom: number; style: { texture: boolean; }; };
     'overlay'?: any[];
     'size'?: number;
     'state'?: any[];
@@ -141,20 +120,6 @@ declare namespace LocalJSX {
     'tree'?: any[];
     'variations'?: any[];
   }
-  interface MyComponent {
-    /**
-    * The first name
-    */
-    'first'?: string;
-    /**
-    * The last name
-    */
-    'last'?: string;
-    /**
-    * The middle name
-    */
-    'middle'?: string;
-  }
 
   interface IntrinsicElements {
     'gc-board': GcBoard;
@@ -162,7 +127,6 @@ declare namespace LocalJSX {
     'gc-controls': GcControls;
     'gc-goban': GcGoban;
     'gc-tree': GcTree;
-    'my-component': MyComponent;
   }
 }
 
@@ -177,7 +141,6 @@ declare module "@stencil/core" {
       'gc-controls': LocalJSX.GcControls & JSXBase.HTMLAttributes<HTMLGcControlsElement>;
       'gc-goban': LocalJSX.GcGoban & JSXBase.HTMLAttributes<HTMLGcGobanElement>;
       'gc-tree': LocalJSX.GcTree & JSXBase.HTMLAttributes<HTMLGcTreeElement>;
-      'my-component': LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
     }
   }
 }

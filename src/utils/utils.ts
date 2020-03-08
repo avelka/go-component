@@ -1,5 +1,10 @@
 import sgfgrove from 'sgfgrove';
 
+interface Coord {
+  x: number
+  y: number
+}
+
 export function format(first: string, middle: string, last: string): string {
   return (
     (first || '') +
@@ -294,4 +299,31 @@ export function numericLabelGenerator(labels: any[]) {
     .filter((e: any) => /[\d]{1,2}/i.test(e[1]))
     .map(e => e[1])));
   return numberList(num.length + 1).find((l: number) => !num.includes(l)) || 1;
+}
+
+
+export function getHoshi(size: number): Coord[] {
+  const side = minMax(1, (Math.round(size / 3) - 1), 3);
+  const oposite = size - side - 1;
+
+  let centerPoints: Coord[] = [];
+
+  if (size % 2) {
+    const center: number = ((size + size % 2) / 2) - 1;
+    centerPoints = [
+      { x: center, y: center },
+      { x: center, y: side },
+      { x: side, y: center },
+      { x: center, y: oposite },
+      { x: oposite, y: center }
+    ];
+  }
+
+  return [
+    ...centerPoints,
+    { x: side, y: side },
+    { x: oposite, y: side },
+    { x: side, y: oposite },
+    { x: oposite, y: oposite },
+  ]
 }

@@ -1,7 +1,6 @@
 .goban {
   display: grid;
-  /* flex-flow: row wrap; */
-  background: #333;
+  background: var(--gc-bg);
   height:100%;
   grid-template-areas: 'board controls';
   grid-template-columns: minmax(max-content, 100vh) minmax(300px, calc(100vw - 100vh));

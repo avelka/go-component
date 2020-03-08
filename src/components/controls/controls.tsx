@@ -17,9 +17,8 @@ import number from '../../assets/toggle_order.svg';
 import tree from '../../assets/toggle_tree.svg';
 import download from '../../assets/download.svg';
 import comments from '../../assets/toggle_comments.svg';
-// import category from '../../assets/category-24px.svg';
-import zoom1 from '../../assets/control_zoom_in.svg';
-import zoom0 from '../../assets/control_zoom_out.svg';
+
+
 import addBlack from '../../assets/marker_black.svg';
 import addWhite from '../../assets/marker_white.svg';
 import addEmpty from '../../assets/marker_empty.svg';
@@ -27,27 +26,28 @@ import addEmpty from '../../assets/marker_empty.svg';
 import addLabelAlpha from '../../assets/marker_label_alpha.svg';
 import addLabelFree from '../../assets/marker_label_free.svg';
 
-
-
-import {MODE, SELECTS, ATTR_SGF} from "../../utils/utils";
-
+import {MODE, ATTR_SGF} from "../../utils/utils";
 
 const markers = [
   [ATTR_SGF.SQUARE, square, 'Square'],
   [ATTR_SGF.CIRCLE, circle, 'Circle'],
   [ATTR_SGF.MARK, cross, 'Mark'],
   [ATTR_SGF.TRIANGLE, triangle, 'Triangle'],
-/*   [ATTR_SGF.ARROW, arrow, 'Arrow'],
-  [ATTR_SGF.LINE, line, 'Line'], */
 
   [ATTR_SGF.ADD_BLACK, addBlack, 'Add black'],
   [ATTR_SGF.ADD_WHITE, addWhite, 'Add white'],
   [ATTR_SGF.ADD_EMPTY, addEmpty, 'Add empty'],
   [ATTR_SGF.LABEL_ALPHA, addLabelAlpha, 'Add alphabetic label '],
   [ATTR_SGF.LABEL_NUMERIC, addLabelFree, 'Add number label '],
-  /* [ATTR_SGF.LABEL, addLabelFree, 'Add label'], */
 
 ];
+const Player = ({color, name, level, score, isTurn}) => <div
+    title={`${name} (${level ? level : '-'})`}
+    data-player={color}
+    data-isturn={color === isTurn}
+  >
+      <span class="captured">{score}</span>
+  </div>;
 
 const MarkerButton = ({icon, onAction, marker, title, selected}) => <button
   data-enabled={selected}
@@ -129,28 +129,11 @@ export class Controls {
     return (
       <section>
         <header class="players-container">
-          {players.map(({color, name, level, score}) => <div
-          data-player={color}
-          data-isturn={color === isTurn}
-          >
-            <div>
-              <span>{name} {level && `(${level})`}</span>
-              <span class="captured">Captured: {score}</span>
-            </div>
-          </div>)}
+          {players.map(p => <Player {...p} isTurn={isTurn}></Player>)}
         </header>
         { this.options.controls &&
           (<div>
-              <select
-                  disabled={this.options.play}
-                  name="interval"
-                  onInput={e => this.changeMode(e)}>
-                {SELECTS.modes.map(({value, label}) => <option
-                  value={value}
-                  selected={this.options.mode == value }>
-                    {label}
-                  </option>)}
-              </select>
+
             <nav>
               <button type="button" onClick={() => this.prev()}><img src={first}/></button>
               <button type="button" onClick={() => this.prev()}><img src={prev}/></button>
@@ -164,11 +147,6 @@ export class Controls {
                 <img src={next}/>
               </button>
               <button type="button" onClick={() => this.prev()}><img src={last}/></button>
-              <span class="input-control zoom">
-                <img src={zoom0}/>
-                <input type="number" min="10" max="200" value={this.options.zoom}/>%
-                <img src={zoom1}/>
-              </span>
             </nav>
             <nav>
               <button type="button" data-enabled={this.options.order} onClick={() => this.toggleNumber()}>
@@ -195,17 +173,11 @@ export class Controls {
             </nav>}
           </div>)
         }
-
-{/* <select
-disabled={this.options.play}
-name="interval"
-onInput={e => this.changeInterval(e)}>
-{SELECTS.intervals.map(({value, label}) => <option value={value} selected={this.options.interval == value }>{label}</option>)}
-</select> */}
       </section>
 
     );
   }
 
 }
+
 

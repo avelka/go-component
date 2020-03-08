@@ -26,6 +26,9 @@ export class Goban {
     comments: false,
     controls: false,
     tree: false,
+    style: {
+      texture: false,
+    }
   };
 
   party = parse(this.sgf);

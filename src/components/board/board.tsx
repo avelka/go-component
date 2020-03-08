@@ -1,6 +1,6 @@
 import { Component, h, Prop, Element, Event, EventEmitter } from '@stencil/core';
 import Debounce from 'debounce-decorator';
-import { minMax, animateCirclePosition, BLACK, WHITE, n2a } from '../../utils/utils';
+import { minMax, animateCirclePosition, BLACK, WHITE, n2a, getHoshi } from '../../utils/utils';
 
 @Component({
   tag: 'gc-board',
@@ -11,7 +11,10 @@ export class Board {
   @Element() el: HTMLElement;
   @Prop() options = {
     order: false,
-    zoom: 100
+    zoom: 100,
+    style: {
+      texture: false
+    }
   };
 
   @Prop() size: number = 19;
@@ -24,7 +27,7 @@ export class Board {
   target = null;
 
   width = 700;
-  padding = 20;
+  padding = 40;
   innerGridSize = this.width - this.padding;
   outerPath = `M 0, 0 H ${this.width} V ${this.width} H 0 V 0`;
   innerPath = `M ${this.padding}, ${this.padding} H ${this.innerGridSize} V ${this.innerGridSize} H ${this.padding} V ${this.padding}`;
@@ -57,7 +60,7 @@ export class Board {
   }
 
   getPosFromCoord(x:number, y:number) {
-    const { width, top, left } = this.el.querySelector(".board").getClientRects()[0];
+    const { width, top, left } = this.el.querySelector(".woodboard").getClientRects()[0];
     const relSize = (v:number) => (this.width / width) * v;
     const pos = (n:number) => Math.ceil((relSize(n) - this.padding - (this.lineSpace / 2)) / this.lineSpace);
     return {x: pos(x + -(left)), y:pos(y + -(top))};
@@ -112,6 +115,11 @@ export class Board {
       y: minMax(0, target.y - this.width / 2, max)
     } : vb;
 
+    const hoshis = getHoshi(this.size).map(({x, y}) =>  ({
+      x: this.getPos(x),
+      y: this.getPos(y)
+    }));
+
     return (
       <svg
       class="svgboard"
@@ -122,40 +130,82 @@ export class Board {
       onMouseMove={e => this.handleOver(e)}
       viewBox={`${cvb.x} ${cvb.x} ${this.width * zoomFactor} ${this.width * zoomFactor}`}>
         <defs>
-        <filter id="wood_texture" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <filter id="wood_texture" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
             <feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="5" seed="1" stitchTiles="stitch" result="turbulence"/>
             <feDiffuseLighting surfaceScale="1" diffuseConstant="4" lighting-color="rgb(223, 178, 96)" in="turbulence" result="diffuseLighting">
                   <feDistantLight azimuth="100" elevation="17"/>
               </feDiffuseLighting>
             <feComposite in="diffuseLighting" in2="SourceAlpha" operator="in" result="composite"/>
             <feMorphology operator="erode" radius="1 15" x="0%" y="0%" width="100%" height="100%" in="composite" result="morphology"/>
-          </filter>
-          <filter id="MyFilter" filterUnits="objectBoundingBox"
+            </filter>
+            <filter id="MyFilter"
+              filterUnits="objectBoundingBox"
               x="0" y="0"
               width="100%" height="100%">
 
-              <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
-              <feOffset in="blur" dx="1" dy="2" result="offsetBlur"/>
+              <feGaussianBlur
+                in="SourceAlpha"
+                stdDeviation="2"
+                result="blur"/>
+              <feOffset
+                in="blur"
+                dx="1"
+                dy="2"
+                result="offsetBlur"/>
 
-              <feSpecularLighting in="blur" surfaceScale="3" specularConstant=".3"
-                                  specularExponent="20" lighting-color="#666666"
-                                  result="specOut">
-                <fePointLight x="-50000" y="-100000" z="200000"/>
+              <feSpecularLighting
+                in="blur"
+                surfaceScale="3"
+                specularConstant=".3"
+                specularExponent="20"
+                lighting-color="#666666"
+                result="specOut">
+                <fePointLight
+                  x="-50000"
+                  y="-100000"
+                  z="200000"/>
               </feSpecularLighting>
-              <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut"/>
-              <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic"
-                          k1="0" k2="1" k3="1" k4="0" result="litPaint"/>
+              <feComposite
+                in="specOut"
+                in2="SourceAlpha"
+                operator="in"
+                result="specOut"/>
+              <feComposite
+                in="SourceGraphic"
+                in2="specOut"
+                operator="arithmetic"
+                k1="0"
+                k2="1"
+                k3="1"
+                k4="0"
+                result="litPaint"/>
 
               <feMerge>
                 <feMergeNode in="offsetBlur"/>
                 <feMergeNode in="litPaint"/>
               </feMerge>
             </filter>
-            <radialGradient id="stone_grad_black" cx="0.5" cy="0.5" r="0.5" fx="0.25" fy="0.25">
-              <stop offset="0%" stop-color="#aaa"/>
-              <stop offset="100%" stop-color="rgb(25, 25, 40)"/>
+            <radialGradient
+              id="stone_grad_black"
+              cx="0.5"
+              cy="0.5"
+              r="0.5"
+              fx="0.25"
+              fy="0.25">
+                <stop
+                  offset="0%"
+                  stop-color="#aaa"/>
+                <stop
+                  offset="100%"
+                  stop-color="rgb(25, 25, 40)"/>
             </radialGradient>
-            <radialGradient id="stone_grad_white" cx="0.5" cy="0.5" r="0.5" fx="0.25" fy="0.25">
+            <radialGradient
+              id="stone_grad_white"
+              cx="0.5"
+              cy="0.5"
+              r="0.5"
+              fx="0.25"
+              fy="0.25">
               <stop offset="0%" stop-color="#ffffff"/>
               <stop offset="100%" stop-color="#aaaaaa"/>
             </radialGradient>
@@ -168,6 +218,13 @@ export class Board {
         <circle cx="1" cy="1" r="0.5" fill="rgba(0,0,0,.3)"/>
         </symbol>
         <symbol
+          id="hoshi"
+          width={this.lineSpace}
+          height={this.lineSpace}
+          viewBox="0 0 2 2">
+        <circle cx="1" cy="1" r="0.1" fill="rgba(0,0,0,.8)"/>
+        </symbol>
+        <symbol
           id="last"
           width={this.lineSpace}
           height={this.lineSpace}
@@ -177,11 +234,9 @@ export class Board {
         {this.renderStoneSymbol(this.lineSpace, BLACK)}
         {this.renderStoneSymbol(this.lineSpace, WHITE)}
         {markers.length && this.renderMarkersSymbol(this.lineSpace) }
-        <path class="board" filter="url(#wood_texture)" d={this.outerPath}></path>
-        <g class="lines">
-            <path  d={this.innerPath}></path>
-            {this.lines.map(d => <path d={d}></path>)}
-          </g>
+        <path class="woodboard" data-textured={this.options.style?.texture} d={this.outerPath}></path>
+        <path class="lines" d={[this.innerPath, ...this.lines].join(' ')}></path>
+        {hoshis.map(({x, y}) => <use xlinkHref="#hoshi" x={x} y={y}/>)}
         <g class="coords">{this.coordMarkers.map(({m, x, y}) => <text x={x} y={y}>{m}</text>)}</g>
         <g class="stones" filter="url(#MyFilter)">
           <path fill="transparent" d={this.outerPath}></path>
@@ -221,9 +276,19 @@ export class Board {
 
   getCoordMarkers() {
     const isz = Array(this.size).fill("").map((_, i) => i);
-    const x = isz.map(i => ({x: (i * this.lineSpace) + this.padding, y: this.padding / 2, m: i + 1}))
-    const y = isz.map(i => ({y: (i * this.lineSpace) + this.padding, x: this.padding / 2, m: i + 1}))
-    return [...x, ...y];
+    const x = isz.map(i => ({
+      x: (i * this.lineSpace) + this.padding,
+      y: this.padding / 2,
+      m: (i < 8 ? n2a(i) : n2a(i+1)).toUpperCase()
+    }));
+    const x2 = x.map(e => ({...e, y: this.width - this.padding / 2 }));
+    const y = isz.map(i => ({
+      y: (i * this.lineSpace) + this.padding,
+      x: this.padding / 2,
+      m: this.size - i
+    }));
+    const y2 = y.map(e => ({...e, x: this.width - (this.padding / 2) }));
+    return [].concat(x, x2, y ,y2);
   };
 
   renderStoneSymbol(size: number, color: string) {
