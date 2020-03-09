@@ -26,6 +26,12 @@ import addEmpty from '../../assets/marker_empty.svg';
 import addLabelAlpha from '../../assets/marker_label_alpha.svg';
 import addLabelFree from '../../assets/marker_label_free.svg';
 
+import more from '../../assets/more.svg';
+import infos from '../../assets/infos.svg';
+import read from '../../assets/read.svg';
+import edit from '../../assets/edit.svg';
+
+
 import {MODE, ATTR_SGF} from "../../utils/utils";
 
 const markers = [
@@ -46,7 +52,10 @@ const Player = ({color, name, level, score, isTurn}) => <div
     data-player={color}
     data-isturn={color === isTurn}
   >
-      <span class="captured">{score}</span>
+      <span class="stone">
+        <span class="captured">{score}</span>
+      </span>
+      <span class="name">{`${name} (${level ? level : '-'})`}</span>
   </div>;
 
 const MarkerButton = ({icon, onAction, marker, title, selected}) => <button
@@ -81,9 +90,11 @@ export class Controls {
   prev() {
     this.selectPosition.emit({ order: this.position - 1 });
   }
+
   first() {
     this.selectPosition.emit({ order: 0 });
   }
+
   last() {
     this.selectPosition.emit({ order: this.history.length });
   }
@@ -95,6 +106,7 @@ export class Controls {
   toggleTree() {
     this.optionChange.emit({tree: !this.options.tree});
   }
+
   toggleComments() {
     this.optionChange.emit({comments: !this.options.comments});
   }
@@ -111,15 +123,26 @@ export class Controls {
     this.optionChange.emit({interval: parseInt(event.target.value, 10)});
   }
 
-  changeMode(event) {
-    this.optionChange.emit({mode: event.target.value});
+  changeMode(mode) {
+    this.optionChange.emit({mode});
   }
+
+  toggleMenu() {
+    this.optionChange.emit({menu: !this.options.menu});
+  }
+
   getSGF() {
     this.download.emit({type: 'sgf'})
   }
+
   selectMarker(marker) {
     this.optionChange.emit({marker});
   }
+
+  toggleInfos() {
+    this.optionChange.emit({infos: !!this.options.infos});
+  }
+
   render() {
     const isTurn = this.data.players[this.position % this.data.players.length].color;
     const players = this.data.players.map(p => {
@@ -128,13 +151,18 @@ export class Controls {
 
     return (
       <section>
-        {players.map(p => <Player {...p} isTurn={isTurn}></Player>)}
-        <div>
-          <div class="player-names">{players.map(({name, level}) => <span>{`${name} (${level ? level : '-'})`}</span>)}</div>
+        <header>
+          {players.map(p => <Player {...p} isTurn={isTurn}></Player>)}
+          <button type="button" onClick={() => this.toggleMenu()}>
+            <img src={more}></img>
+          </button>
+        </header>
+        {this.options.menu && <div class="menu">
           { this.renderReadBar() }
           { this.renderEditBar() }
-        </div>
+        </div>}
       </section>
+
 
     );
   }
@@ -152,55 +180,70 @@ export class Controls {
 
   renderReadBar() {
     return <nav>
+       <button
+        type="button"
+        data-enabled={this.options.mode === MODE.READ}
+        onClick={() => this.changeMode(MODE.READ)}>
+          <img src={read}/>
+      </button>
+      <button
+        type="button"
+        data-enabled={this.options.mode === MODE.EDIT}
+        onClick={() => this.changeMode(MODE.EDIT)}>
+          <img src={edit}/>
+      </button>
+
       <button
         type="button"
         onClick={() => this.first()}>
           <img src={first}/>
       </button>
-      <button
-        type="button"
-        onClick={() => this.prev()}>
-          <img src={prev}/>
-      </button>
-      <button
-        type="button"
+
+      <Button
+        onClick={() => this.first()} icon={first} />
+
+
+      <Button
+        onClick={() => this.prev()}
+        icon={prev}/>
+
+      <Button
         disabled={this.options.mode !== MODE.READ}
         data-enabled={this.options.play}
-        onClick={() => this.playPause()}>
-        {this.options.play ? <img src={pause}/> : <img src={play}/>}
-      </button>
-      <button
-        type="button"
-        onClick={() => this.next()}>
-        <img src={next}/>
-      </button>
-      <button
-        type="button"
-        onClick={() => this.last()}>
-        <img src={last}/>
-      </button>
-      <button
-        type="button"
+        onClick={() => this.playPause()}
+        icon={this.options.play ? pause : play} />
+
+      <Button
+        onClick={() => this.next()}
+        icon={next}/>
+
+      <Button
+        onClick={() => this.last()} icon={last}/>
+
+      <Button
         data-enabled={this.options.order}
-        onClick={() => this.toggleNumber()}>
-        <img src={number}/>
-      </button>
-      <button type="button"
+        onClick={() => this.toggleNumber()} icon={number}/>
+
+      <Button
         data-enabled={this.options.tree}
-        onClick={() => this.toggleTree()}>
-        <img src={tree}/>
-      </button>
-      <button
-        type="button"
+        onClick={() => this.toggleTree()} icon={tree} />
+
+      <Button
+        data-enabled={this.options.order}
+        onClick={() => this.toggleInfos()} icon={infos}/>
+
+      <Button
         data-enabled={this.options.comments}
-        onClick={() => this.toggleComments()}>
-        <img src={comments}/>
-      </button>
-      <button type="button" onClick={() => this.getSGF()}>
-        <img src={download}/>
-      </button>
+        onClick={() => this.toggleComments()}
+        icon={comments} />
+
+      <Button onClick={() => this.getSGF()} icon={download} />
+
     </nav>;
   }
-}
+
+ }
+ const Button = ({icon, ...props}) => <button type="button" {...props}> <img src={icon}/></button>
+
 
 

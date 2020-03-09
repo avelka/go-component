@@ -1,11 +1,11 @@
 .goban {
-  display: grid;
+  display: flex;
+  flex-flow: column;
   overflow: hidden;
   position: relative;
   background: var(--gc-bg);
-  height:100%;
   grid-template-areas: 'board' 'controls';
-  grid-template-rows: 1fr 3em;
+  grid-template-rows: auto-fill;
   transition: .3s ease-in-out all;
 }
 .goboard {

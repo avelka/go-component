@@ -9,9 +9,11 @@
       margin:0;
       height: 100%;
     }
-    .goban {
+    .goban-viewer{
       display: block;
-      width: 500px;
+     /*  width: calc(100vh - 3em); */
+     width: 300px;
+      /* height: 100vh; */
     }
     :root {
       --gc-font: Verdana, Geneva, Tahoma, sans-serif;
@@ -62,7 +64,7 @@
 </head>
 <body>
 
-  <gc-goban class="goban" sgf="(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
+  <gc-goban class="goban-viewer" sgf="(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
   RU[Japanese]SZ[9]KM[0.00]
   PW[Blanc]PB[Noir]
   ;B[cc]
