@@ -61,7 +61,8 @@ export const ATTR_SGF = {
 export const MODE = {
   READ: 'READ',
   EDIT: 'EDIT',
-  PLAY: 'PLAY'
+  PLAY: 'PLAY',
+  SETTINGS: 'SETTINGS'
 };
 
 export const SELECTS = {

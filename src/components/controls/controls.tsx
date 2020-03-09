@@ -30,6 +30,7 @@ import more from '../../assets/more.svg';
 import infos from '../../assets/infos.svg';
 import read from '../../assets/read.svg';
 import edit from '../../assets/edit.svg';
+import settings from '../../assets/settings.svg';
 
 
 import {MODE, ATTR_SGF} from "../../utils/utils";
@@ -158,8 +159,10 @@ export class Controls {
           </button>
         </header>
         {this.options.menu && <div class="menu">
-          { this.renderReadBar() }
-          { this.renderEditBar() }
+          { this.renderModeBar()}
+          { this.options.mode === MODE.SETTINGS && this.renderSettingsBar() }
+          { this.options.mode === MODE.READ && this.renderReadBar() }
+          { this.options.mode === MODE.EDIT && this.renderEditBar() }
         </div>}
       </section>
 
@@ -178,29 +181,31 @@ export class Controls {
     </nav>
   }
 
-  renderReadBar() {
-    return <nav>
-       <button
-        type="button"
+  renderModeBar() {
+    return <nav class="tablist">
+      <Button
         data-enabled={this.options.mode === MODE.READ}
-        onClick={() => this.changeMode(MODE.READ)}>
-          <img src={read}/>
-      </button>
-      <button
-        type="button"
-        data-enabled={this.options.mode === MODE.EDIT}
-        onClick={() => this.changeMode(MODE.EDIT)}>
-          <img src={edit}/>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => this.first()}>
-          <img src={first}/>
-      </button>
+        onClick={() => this.changeMode(MODE.READ)}
+        icon={read}/>
 
       <Button
-        onClick={() => this.first()} icon={first} />
+        data-enabled={this.options.mode === MODE.EDIT}
+        onClick={() => this.changeMode(MODE.EDIT)}
+        icon={edit}/>
+
+      <Button
+        data-enabled={this.options.mode === MODE.SETTINGS}
+        onClick={() => this.changeMode(MODE.SETTINGS)}
+        icon={settings}/>
+
+    </nav>
+  }
+
+  renderReadBar() {
+    return <nav>
+      <Button
+        onClick={() => this.first()}
+        icon={first} />
 
 
       <Button
@@ -220,6 +225,11 @@ export class Controls {
       <Button
         onClick={() => this.last()} icon={last}/>
 
+    </nav>;
+  }
+
+  renderSettingsBar() {
+    return <nav>
       <Button
         data-enabled={this.options.order}
         onClick={() => this.toggleNumber()} icon={number}/>

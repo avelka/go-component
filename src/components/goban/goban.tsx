@@ -5,7 +5,6 @@ import { BoardService, RuleService } from 'kifu';
 const STONE_COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
 const SYMBOL_COMPOSED_UNIQUE = [ATTR_SGF.CIRCLE, ATTR_SGF.SQUARE, ATTR_SGF.TRIANGLE, ATTR_SGF.MARK];
 
-
 @Component({
   tag: 'gc-goban',
   styleUrl: 'goban.css',
