@@ -334,3 +334,23 @@ export function getHoshi(size: number): Coord[] {
     { x: oposite, y: oposite },
   ]
 }
+export const STYLES = {
+  MINIMAL: 'miminal',
+  CONDENSED: 'condensed',
+  NORMAL: 'normal',
+  FULLSIZE: 'fullsize'
+}
+export const conditionalStyles = (el: HTMLElement) => {
+  const { width: elWidth, height: elHeight } = el.getBoundingClientRect()
+  const msize = Math.min(elWidth, elHeight);
+  switch (true) {
+    case (msize < 300):
+      return STYLES.MINIMAL;
+    case (msize < 600):
+      return STYLES.CONDENSED;
+    case (msize < 900):
+      return STYLES.NORMAL;
+    default:
+      return STYLES.FULLSIZE;
+  }
+}

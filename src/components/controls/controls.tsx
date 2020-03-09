@@ -158,12 +158,12 @@ export class Controls {
             <img src={more}></img>
           </button>
         </header>
-        {this.options.menu && <div class="menu">
+        <div class="menu" data-hidden={!this.options.menu} data-displayed={!this.options.menu}>
           { this.renderModeBar()}
           { this.options.mode === MODE.SETTINGS && this.renderSettingsBar() }
           { this.options.mode === MODE.READ && this.renderReadBar() }
           { this.options.mode === MODE.EDIT && this.renderEditBar() }
-        </div>}
+        </div>
       </section>
 
 
@@ -182,18 +182,22 @@ export class Controls {
   }
 
   renderModeBar() {
+    const focusable = this.options.menu ? 0 : -1;
     return <nav class="tablist">
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.mode === MODE.READ}
         onClick={() => this.changeMode(MODE.READ)}
         icon={read}/>
 
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.mode === MODE.EDIT}
         onClick={() => this.changeMode(MODE.EDIT)}
         icon={edit}/>
 
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.mode === MODE.SETTINGS}
         onClick={() => this.changeMode(MODE.SETTINGS)}
         icon={settings}/>
@@ -202,52 +206,67 @@ export class Controls {
   }
 
   renderReadBar() {
+    const focusable = this.options.menu ? 0 : -1;
     return <nav>
       <Button
+        tabIndex={focusable}
         onClick={() => this.first()}
         icon={first} />
 
 
       <Button
+        tabIndex={focusable}
         onClick={() => this.prev()}
         icon={prev}/>
 
       <Button
+        tabIndex={focusable}
         disabled={this.options.mode !== MODE.READ}
         data-enabled={this.options.play}
         onClick={() => this.playPause()}
         icon={this.options.play ? pause : play} />
 
       <Button
+        tabIndex={focusable}
         onClick={() => this.next()}
         icon={next}/>
 
       <Button
-        onClick={() => this.last()} icon={last}/>
+        tabIndex={focusable}
+        onClick={() => this.last()}
+        icon={last}/>
 
     </nav>;
   }
 
   renderSettingsBar() {
+    const focusable = this.options.menu ? 0 : -1;
     return <nav>
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.order}
         onClick={() => this.toggleNumber()} icon={number}/>
 
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.tree}
         onClick={() => this.toggleTree()} icon={tree} />
 
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.order}
         onClick={() => this.toggleInfos()} icon={infos}/>
 
       <Button
+        tabIndex={focusable}
         data-enabled={this.options.comments}
         onClick={() => this.toggleComments()}
         icon={comments} />
 
-      <Button onClick={() => this.getSGF()} icon={download} />
+      <Button
+      tabIndex={focusable}
+      onClick={() => this.getSGF()}
+      icon={download} />
 
     </nav>;
   }

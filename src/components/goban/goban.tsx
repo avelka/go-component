@@ -1,5 +1,5 @@
-import { Component, Prop, State, h, Listen } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator } from '../../utils/utils';
+import { Component, Prop, State, h, Listen, Element } from '@stencil/core';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator, conditionalStyles, STYLES } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
 const STONE_COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
@@ -13,6 +13,7 @@ const SYMBOL_COMPOSED_UNIQUE = [ATTR_SGF.CIRCLE, ATTR_SGF.SQUARE, ATTR_SGF.TRIAN
 export class Goban {
   bs = new BoardService();
   rule = new RuleService();
+  @Element() el: HTMLElement;
   @Prop() sgf = null;
   @Prop() currentPosition: number = 0;
   @State() variations: any = [0];
@@ -34,6 +35,7 @@ export class Goban {
   @State() currentPath = getCurrentPath(this.party.tree, this.variations)
   @State() board = this.getGameState();
   timer: number;
+  @State() hideMenu = STYLES.MINIMAL = conditionalStyles(this.el);
 
   @Listen('selectPosition')
   handlePosition(event: CustomEvent) {
@@ -173,7 +175,7 @@ export class Goban {
     dowloadAsSGF(this.party);
   }
 
-  @Listen('keydown', { target: 'parent' })
+  @Listen('keydown')
   handleKeyDown(ev: KeyboardEvent){
     switch(ev.key) {
       case 'd':
@@ -244,6 +246,9 @@ export class Goban {
     this.handleAutoPlay(this.options);
   }
 
+  componentDidRender() {
+    this.hideMenu = conditionalStyles(this.el);
+  }
   render() {
     const meta = {
       ...this.party.meta,
@@ -269,7 +274,7 @@ export class Goban {
           ghosts={getGhosts(this.currentPath, this.currentPosition)}>
         </gc-board>
 
-          <gc-controls
+          {this.hideMenu && <gc-controls
             class="controls"
             data={meta}
             score={score}
@@ -277,7 +282,7 @@ export class Goban {
             variations={this.variations}
             history={this.currentPath}
             position={this.currentPosition}>
-          </gc-controls>
+          </gc-controls> }
           { this.options.comments &&
             <gc-comments
               class="comments"

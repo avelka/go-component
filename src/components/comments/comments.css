@@ -10,19 +10,22 @@ div {
   from {
     opacity: 0;
     transform: translateY(3em);
+    filter: blur(5px)
   }
   to {
-    opacity: 1;
+    opacity: .7;
     transform: translateY(0em);
+    filter: blur(0px)
   }
 }
 p {
   animation: slideIn .5s ease-in-out forwards;
   display: inline-flex;
   align-items: center;
-  background: var(--gc-bg-50);
+  background: var(--gc-bg-dark);
   border-radius: var(--gc-radius);
   padding:.5em;
   margin: .5em;
-  color: var(--gc-txt-light);
+  color: var(--gc-txt-dark);
+  opacity: .5;
 }
