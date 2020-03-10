@@ -32,6 +32,7 @@
 :host {
   display: block;
   font-family: var(--gc-font);
+  max-width: var(--gcp-max-boardsize, 100vh);
 }
 
 header {
@@ -124,6 +125,7 @@ nav button {
   right:0;
   bottom:3em;
   height: calc(100% - 3em);
+  max-width: var(--gcp-max-boardsize, 100vh);
   pointer-events:none;
   overflow: auto;
   background: linear-gradient(0, var(--gc-bg-light), transparent 20%);
@@ -221,11 +223,12 @@ button:hover {
 button[data-enabled] {
   background: var(--gc-bg);
 }
+button img {
+  opacity: .6;
+}
 button[data-enabled] img {
   filter: invert(1)
 }
-
-
 
 .input-control,
 button,

@@ -281,7 +281,7 @@ export class Goban {
     const score = getScore(this.board.history);
 
     return (
-      <div class="goban" tabindex="0">
+      <div class="goban" tabindex="0"  data-variante={this.options.style}>
         <img class="focus-indicator" src={keyboard}/>
         <gc-board
           class="goboard"

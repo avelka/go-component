@@ -18,17 +18,23 @@
   opacity:0;
   transition: .3s ease-in-out all;
   transform: translateY(-3em);
-  color: var(--gc-bg-light);
+  color: var(--gc-bg);
   border-left: 5px solid;
   border-top: 5px solid;
+
 }
 .goban:focus-within .focus-indicator {
   opacity: 1;
   transform: translateY(0);
 }
+[data-variante="condensed"],
+[data-variante="normal"] {
+  --gcp-max-boardsize: calc(100vh - 3em);
+}
 .goboard {
   grid-area: board;
-  max-height: 100vh;
+  max-height: var(--gcp-max-boardsize, 100vh);
+  max-width: var(--gcp-max-boardsize, 100vh);
   overflow-x: auto;
   place-self: stretch;
   height: 100%;
@@ -47,6 +53,7 @@
   position: absolute;
   animation: slideIn .5s ease-in-out forwards;
   width: 100%;
+  max-width: var(--gcp-max-boardsize, 100vh);
   height: calc(100% - 3em);
   background: linear-gradient(var(--gc-bg-80) 50%, transparent);
 }
@@ -58,5 +65,6 @@
   position: absolute;
   width: 100%;
   height: calc(100% - 3em);
+  max-width: var(--gcp-max-boardsize, 100vh);
 }
 

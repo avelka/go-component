@@ -57,7 +57,6 @@ export class Tree {
   render() {
     return (
       <div>
-        {this.position} / {this.current.length - 1} | {JSON.stringify(this.variations)}
         <div class="tree-view">
           {this.showBranch(this.tree)}
         </div>
