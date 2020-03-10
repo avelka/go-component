@@ -354,3 +354,8 @@ export const conditionalStyles = (el: HTMLElement) => {
       return STYLES.FULLSIZE;
   }
 }
+
+export const showMenu = (style: string) => {
+  console.log({ style, t: [STYLES.CONDENSED, STYLES.FULLSIZE, STYLES.NORMAL].includes(style) })
+  return [STYLES.CONDENSED, STYLES.FULLSIZE, STYLES.NORMAL].includes(style);
+}

@@ -123,7 +123,6 @@ export class Board {
     return (
       <svg
       class="svgboard"
-      tabIndex={0}
       onMouseLeave={() => this.handleLeave()}
       onMouseMove={e => this.handleOver(e)}
       viewBox={`${cvb.x} ${cvb.x} ${this.width * zoomFactor} ${this.width * zoomFactor}`}>

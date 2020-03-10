@@ -1,9 +1,11 @@
 import { Component, Prop, State, h, Listen, Element } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator, conditionalStyles, STYLES } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator, conditionalStyles, showMenu } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
 const STONE_COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
 const SYMBOL_COMPOSED_UNIQUE = [ATTR_SGF.CIRCLE, ATTR_SGF.SQUARE, ATTR_SGF.TRIANGLE, ATTR_SGF.MARK];
+
+import keyboard from '../../assets/keybpoard.svg';
 
 @Component({
   tag: 'gc-goban',
@@ -35,7 +37,7 @@ export class Goban {
   @State() currentPath = getCurrentPath(this.party.tree, this.variations)
   @State() board = this.getGameState();
   timer: number;
-  @State() hideMenu = STYLES.MINIMAL = conditionalStyles(this.el);
+  @State() displayControls = false;
 
   @Listen('selectPosition')
   handlePosition(event: CustomEvent) {
@@ -176,7 +178,21 @@ export class Goban {
   }
 
   @Listen('keydown')
-  handleKeyDown(ev: KeyboardEvent){
+  keydownComponent(ev: KeyboardEvent){
+    if (!this.options.allowWindowsEvent) {
+      this.handleKeydown(ev);
+    }
+  }
+
+  @Listen('keydown', { target: 'window' })
+  keydownWindow(ev: KeyboardEvent) {
+    if (this.options.allowWindowsEvent) {
+      this.handleKeydown(ev);
+    }
+  }
+
+  handleKeydown(ev) {
+    ev.preventDefault();
     switch(ev.key) {
       case 'd':
         console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
@@ -247,7 +263,8 @@ export class Goban {
   }
 
   componentDidRender() {
-    this.hideMenu = conditionalStyles(this.el);
+    this.options.style = conditionalStyles(this.el);
+    this.displayControls = showMenu(this.options.style)
   }
   render() {
     const meta = {
@@ -264,7 +281,8 @@ export class Goban {
     const score = getScore(this.board.history);
 
     return (
-      <div class="goban">
+      <div class="goban" tabindex="0">
+        <img class="focus-indicator" src={keyboard}/>
         <gc-board
           class="goboard"
           options={this.options}
@@ -274,7 +292,7 @@ export class Goban {
           ghosts={getGhosts(this.currentPath, this.currentPosition)}>
         </gc-board>
 
-          {this.hideMenu && <gc-controls
+          {this.displayControls && <gc-controls
             class="controls"
             data={meta}
             score={score}

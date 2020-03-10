@@ -8,6 +8,24 @@
   grid-template-rows: auto-fill;
   transition: .3s ease-in-out all;
 }
+.focus-indicator {
+  position: absolute;
+  top:0px;
+  left:0px;
+  width:2em;
+  height:2em;
+  pointer-events: none;
+  opacity:0;
+  transition: .3s ease-in-out all;
+  transform: translateY(-3em);
+  color: var(--gc-bg-light);
+  border-left: 5px solid;
+  border-top: 5px solid;
+}
+.goban:focus-within .focus-indicator {
+  opacity: 1;
+  transform: translateY(0);
+}
 .goboard {
   grid-area: board;
   max-height: 100vh;
