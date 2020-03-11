@@ -33,7 +33,7 @@ import edit from '../../assets/edit.svg';
 import settings from '../../assets/settings.svg';
 
 
-import {MODE, ATTR_SGF} from "../../utils/utils";
+import {MODE, ATTR_SGF, STYLES} from "../../utils/utils";
 
 const markers = [
   [ATTR_SGF.SQUARE, square, 'Square'],
@@ -129,7 +129,7 @@ export class Controls {
   }
 
   toggleMenu() {
-    this.optionChange.emit({menu: !this.options.menu});
+    this.optionChange.emit({ menu: !this.options.menu });
   }
 
   getSGF() {
@@ -149,14 +149,14 @@ export class Controls {
     const players = this.data.players.map(p => {
       return {...p, score: this.score.get(p.color)};
     });
-
+    const showMenuToggle = this.options.style === STYLES.CONDENSED
     return (
-      <section>
+      <section class={this.options.style}>
         <header>
           {players.map(p => <Player {...p} isTurn={isTurn}></Player>)}
-          <button type="button" onClick={() => this.toggleMenu()}>
+          {showMenuToggle && <button type="button" onClick={() => this.toggleMenu()}>
             <img src={more}></img>
-          </button>
+          </button>}
         </header>
         <div class="menu" data-hidden={!this.options.menu} data-displayed={!this.options.menu}>
           { this.renderModeBar()}

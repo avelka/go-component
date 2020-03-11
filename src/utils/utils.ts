@@ -341,8 +341,7 @@ export const STYLES = {
   FULLSIZE: 'fullsize'
 }
 export const conditionalStyles = (el: HTMLElement) => {
-  const { width: elWidth, height: elHeight } = el.getBoundingClientRect()
-  const msize = Math.min(elWidth, elHeight);
+  const { width: msize } = el.getBoundingClientRect()
   switch (true) {
     case (msize < 300):
       return STYLES.MINIMAL;

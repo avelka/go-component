@@ -33,6 +33,10 @@
   display: block;
   font-family: var(--gc-font);
   max-width: var(--gcp-max-boardsize, 100vh);
+
+}
+.normal :host {
+  position: relative;
 }
 
 header {
@@ -43,26 +47,17 @@ header {
   height: 3em;
   z-index: 20;
 }
-header button {
-  flex: 1 0 3em;
-  height: 3em;
-  transition: all ease-in-out .3s;
+
+:not(.condensed) header {
+  height: auto;
+  flex-flow: row wrap;
 }
 
-
-/* nav {
-  transition: .3s ease-in-out all;
-  transform: translateY(-10em);
-  opacity: 0;
-  pointer-events: none;
-} */
-
-/* section:focus-within nav,
-section:hover nav {
-  transform: translateY(-6em);
-  opacity: .9;
-  pointer-events: auto;
-} */
+header button {
+  height: 3em;
+  transition: all ease-in-out .3s;
+  flex: 1 0 3em;
+}
 
 [data-player] {
   display: flex;
@@ -81,9 +76,9 @@ section:hover nav {
   flex: 0 0 2rem;
   transition: all ease-in-out .3s;
 }
-
-[data-player]:hover {
-  flex: 2 0 2rem;
+:not(.condensed) [data-player],
+.condensed [data-player] :hover {
+  flex: 1 0 200px;
 }
 
 nav {
@@ -91,9 +86,11 @@ nav {
   display: flex;
   flex-flow: row wrap-reverse;
 }
+
 nav button {
   animation: slideInRight .5s -.5s ease-in-out both;
 }
+
 .tablist {
   display: flex;
   background: var(--gc-bg-dark);
@@ -103,32 +100,37 @@ nav button {
   transition: .3s ease-in-out all;
   max-height: 100%;
 }
+
 .tablist :not([data-enabled]) {
   order: 1;
 }
+
 .tablist:not(:focus-within),
 .tablist:not(:hover) {
   max-height: 40px;
 }
+
 .tablist > button {
   flex:1 0 40px;
   width:48px
 }
+
 .tablist img {
   filter: invert(1);
 }
-
-
-.menu {
+.condensed .menu {
   position: absolute;
   left: 0;
   right:0;
   bottom:3em;
   height: calc(100% - 3em);
+  background: linear-gradient(0, var(--gc-bg-light), transparent 20%);
+}
+.menu {
   max-width: var(--gcp-max-boardsize, 100vh);
   pointer-events:none;
   overflow: auto;
-  background: linear-gradient(0, var(--gc-bg-light), transparent 20%);
+  background: var(--gc-bg-light);
 
   transition:all .5s ease-in-out;
   display: flex;

@@ -4,10 +4,9 @@
   overflow: hidden;
   position: relative;
   background: var(--gc-bg);
-  grid-template-areas: 'board' 'controls';
-  grid-template-rows: auto-fill;
   transition: .3s ease-in-out all;
 }
+
 .focus-indicator {
   position: absolute;
   top:0px;
@@ -27,18 +26,29 @@
   opacity: 1;
   transform: translateY(0);
 }
-[data-variante="condensed"],
-[data-variante="normal"] {
+
+.goban.condensed {
   --gcp-max-boardsize: calc(100vh - 3em);
+}
+.goban.normal,
+.goban.fullsize {
+  --gcp-max-boardsize: 100vh;
+  display: grid;
+  grid-template-areas: 'board controls'
+  'board comments'
+  'board tree';
+  grid-template-columns: minmax(max-content, var(--gcp-max-boardsize, 100vh)) minmax(250px, 1fr);
+  grid-template-rows: auto 1fr 200px;
+
 }
 .goboard {
   grid-area: board;
   max-height: var(--gcp-max-boardsize, 100vh);
   max-width: var(--gcp-max-boardsize, 100vh);
   overflow-x: auto;
-  place-self: stretch;
   height: 100%;
 }
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -50,10 +60,16 @@
   }
 }
 .tree {
-  position: absolute;
-  animation: slideIn .5s ease-in-out forwards;
+  grid-area: tree;
   width: 100%;
+  height:300px;
   max-width: var(--gcp-max-boardsize, 100vh);
+  background: var(--gc-bg-dark);
+  animation: slideIn .5s ease-in-out forwards;
+}
+.condensed .tree {
+
+  position:absolute;
   height: calc(100% - 3em);
   background: linear-gradient(var(--gc-bg-80) 50%, transparent);
 }
@@ -61,6 +77,15 @@
   z-index: 5;
   grid-area: controls;
 }
+:not(.condensed) .controls {
+  position: relative;
+}
+:not(.condensed) .comments {
+  position: relative;
+  top: 3em;
+  z-index: 0;
+}
+
 .comments {
   position: absolute;
   width: 100%;

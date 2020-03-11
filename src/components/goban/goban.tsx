@@ -1,5 +1,5 @@
 import { Component, Prop, State, h, Listen, Element } from '@stencil/core';
-import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator, conditionalStyles, showMenu } from '../../utils/utils';
+import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator, conditionalStyles, showMenu, STYLES } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
 const STONE_COMPOSED_UNIQUE = [ATTR_SGF.ADD_EMPTY, ATTR_SGF.ADD_BLACK, ATTR_SGF.ADD_WHITE];
@@ -263,7 +263,10 @@ export class Goban {
   }
 
   componentDidRender() {
-    this.options.style = conditionalStyles(this.el);
+    const style = conditionalStyles(this.el);
+    this.updateOptions({style,
+       comments: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style),
+       menu: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style) });
     this.displayControls = showMenu(this.options.style)
   }
   render() {
@@ -279,9 +282,8 @@ export class Goban {
       }
     });
     const score = getScore(this.board.history);
-
     return (
-      <div class="goban" tabindex="0"  data-variante={this.options.style}>
+      <div class={`goban ${this.options.style}`} tabindex="0" title={this.options.style}>
         <img class="focus-indicator" src={keyboard}/>
         <gc-board
           class="goboard"
