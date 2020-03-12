@@ -83,13 +83,15 @@ export class Goban {
 
     if (isNext < 0) {
       const node = [[toSGFObject(move)], []];
+
       if (isLastInbranch && !treeRef[1].length) {
         treeRef[0] = [...treeRef[0], toSGFObject(move)];
       } else {
         const start = treeRef[0].slice(0, branchIndex + 1);
         const end = treeRef[0].slice(branchIndex + 1);
+        console.log({start, end})
         treeRef[0] = start;
-        treeRef[1] = [[end, [...treeRef[1]]], node];
+        treeRef[1] = [[end, [...treeRef[1]]], [[toSGFObject(move)], []]];
       }
     }
 
@@ -113,7 +115,6 @@ export class Goban {
         break;
       case type === ATTR_SGF.LABEL_NUMERIC:
         change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: numericLabelGenerator });
-        console.log(change);
         break;
       case SYMBOL_COMPOSED_UNIQUE.includes(type):
         change = this.setMarker({current, type, coord});
@@ -186,68 +187,74 @@ export class Goban {
 
   @Listen('keydown', { target: 'window' })
   keydownWindow(ev: KeyboardEvent) {
+
     if (this.options.allowWindowsEvent) {
       this.handleKeydown(ev);
     }
   }
 
-  handleKeydown(ev) {
-    ev.preventDefault();
-    switch(ev.key) {
-      case 'd':
-        console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
-        break;
-      case 'ArrowDown':
-      case 'ArrowUp':
-        const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
-        this.changeNextFork(inc);
-        break;
-      case 'ArrowLeft':
-      case 'ArrowRight':
-        const dir: number = ev.key == 'ArrowLeft' ? -1 : 1;
-        const speed:number = ev.shiftKey ? 10 : 1;
-        this.updatePosition({order: this.currentPosition + dir * speed });
-        break;
-      case 'o':
-      case 'O':
-        this.updateOptions({order: !this.options.order});
-        break;
-      case 't':
-      case 'T':
-        this.updateOptions({tree: !this.options.tree});
-        break;
-      case 'n':
-      case 'N':
-        this.updateOptions({controls: !this.options.controls});
-        break;
-      case 'c':
-      case 'C':
-        this.updateOptions({comments: !this.options.comments});
-        break;
-      case 'e':
-      case 'E':
-        this.updateOptions({mode: MODE.EDIT});
-        break;
-      case 'p':
-      case 'P':
-        this.updateOptions({mode: MODE.PLAY});
-        break;
-      case 'r':
-      case 'R':
-        this.updateOptions({mode: MODE.READ});
-        break;
-      case ' ':
-        this.updateOptions({play: !this.options.play});
-        break;
-      case '+':
-        this.updateOptions({zoom: minMax(10, this.options.zoom + 1, 200)});
-        break;
-      case '-':
-        this.updateOptions({zoom: minMax(10, this.options.zoom - 1, 200)});
-        break;
-      case '=':
-        this.updateOptions({zoom: 100});
-        break;
+  handleKeydown(ev: KeyboardEvent) {
+    const isTyping = (ev: any) => {
+      return ['textarea', 'input'].includes(ev.path[0].type);
+    }
+
+    if (!isTyping(ev)) {
+      switch(ev.key) {
+        case 'd':
+          console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
+          break;
+        case 'ArrowDown':
+        case 'ArrowUp':
+          const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
+          this.changeNextFork(inc);
+          break;
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          const dir: number = ev.key == 'ArrowLeft' ? -1 : 1;
+          const speed:number = ev.shiftKey ? 10 : 1;
+          this.updatePosition({order: this.currentPosition + dir * speed });
+          break;
+        case 'o':
+        case 'O':
+          this.updateOptions({order: !this.options.order});
+          break;
+        case 't':
+        case 'T':
+          this.updateOptions({tree: !this.options.tree});
+          break;
+        case 'n':
+        case 'N':
+          this.updateOptions({controls: !this.options.controls});
+          break;
+        case 'c':
+        case 'C':
+          this.updateOptions({comments: !this.options.comments});
+          break;
+        case 'e':
+        case 'E':
+          this.updateOptions({mode: MODE.EDIT});
+          break;
+        case 'p':
+        case 'P':
+          this.updateOptions({mode: MODE.PLAY});
+          break;
+        case 'r':
+        case 'R':
+          this.updateOptions({mode: MODE.READ});
+          break;
+        case ' ':
+          this.updateOptions({play: !this.options.play});
+          break;
+        case '+':
+          this.updateOptions({zoom: minMax(10, this.options.zoom + 1, 200)});
+          break;
+        case '-':
+          this.updateOptions({zoom: minMax(10, this.options.zoom - 1, 200)});
+          break;
+        case '=':
+          this.updateOptions({zoom: 100});
+          break;
+      }
     }
   }
 
@@ -257,18 +264,31 @@ export class Goban {
       this.updateOptions({zoom: minMax(10, this.options.zoom -(Math.sign(ev.deltaY)), 200)});
     }
   }
+  @Listen('resize', { target: 'window' })
+  handleResize() {
+    this.updateLayout();
+  }
+
 
   componentDidUpdate() {
     this.handleAutoPlay(this.options);
   }
 
   componentDidRender() {
-    const style = conditionalStyles(this.el);
-    this.updateOptions({style,
-       comments: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style),
-       menu: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style) });
-    this.displayControls = showMenu(this.options.style)
+    this.updateLayout();
   }
+
+  updateLayout() {
+    const style = conditionalStyles(this.el);
+    if (this.options.style !== style) {
+      this.updateOptions({style,
+        comments: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style),
+        menu: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style) });
+        this.displayControls = showMenu(this.options.style);
+    }
+  }
+
+
   render() {
     const meta = {
       ...this.party.meta,
@@ -283,7 +303,7 @@ export class Goban {
     });
     const score = getScore(this.board.history);
     return (
-      <div class={`goban ${this.options.style}`} tabindex="0" title={this.options.style}>
+      <div class={`goban ${this.options.style}`} tabindex="0">
         <img class="focus-indicator" src={keyboard}/>
         <gc-board
           class="goboard"

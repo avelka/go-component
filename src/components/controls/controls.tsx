@@ -149,7 +149,13 @@ export class Controls {
     const players = this.data.players.map(p => {
       return {...p, score: this.score.get(p.color)};
     });
+
     const showMenuToggle = this.options.style === STYLES.CONDENSED
+
+    const settings = this.options.mode === MODE.SETTINGS;
+    const read = this.options.mode === MODE.READ
+    const edit = this.options.mode === MODE.EDIT
+
     return (
       <section class={this.options.style}>
         <header>
@@ -158,15 +164,13 @@ export class Controls {
             <img src={more}></img>
           </button>}
         </header>
-        <div class="menu" data-hidden={!this.options.menu} data-displayed={!this.options.menu}>
+        <div class="menu" data-hidden={!this.options.menu}>
           { this.renderModeBar()}
-          { this.options.mode === MODE.SETTINGS && this.renderSettingsBar() }
-          { this.options.mode === MODE.READ && this.renderReadBar() }
-          { this.options.mode === MODE.EDIT && this.renderEditBar() }
+          { settings && this.renderSettingsBar() }
+          { read && this.renderReadBar() }
+          { edit && this.renderEditBar() }
         </div>
       </section>
-
-
     );
   }
 

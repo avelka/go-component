@@ -45,7 +45,7 @@ export class Tree {
     return <button
     type="button"
     class="stone"
-    title={`${move.x + 1}.${move.y + 1}`}
+    /* title={`${move.x + 1}.${move.y + 1}`}*/
     onClick={() => this.select(move.order || 0, vpath)}
     data-in-path={this.isInPath(vpath)}
     data-is-current={this.isCurrent(move, vpath)}

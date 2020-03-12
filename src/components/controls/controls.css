@@ -76,6 +76,7 @@ header button {
   flex: 0 0 2rem;
   transition: all ease-in-out .3s;
 }
+
 :not(.condensed) [data-player],
 .condensed [data-player] :hover {
   flex: 1 0 200px;
@@ -101,12 +102,18 @@ nav button {
   max-height: 100%;
 }
 
-.tablist :not([data-enabled]) {
+:not(.condensed) .tablist {
+  flex-flow: row;
+  overflow: visible;
+  flex: 1 0 40px;
+}
+
+.condensed .tablist :not([data-enabled]) {
   order: 1;
 }
 
-.tablist:not(:focus-within),
-.tablist:not(:hover) {
+.condensed .tablist:not(:focus-within),
+.condensed .tablist:not(:hover) {
   max-height: 40px;
 }
 
@@ -118,6 +125,7 @@ nav button {
 .tablist img {
   filter: invert(1);
 }
+
 .condensed .menu {
   position: absolute;
   left: 0;
@@ -126,6 +134,7 @@ nav button {
   height: calc(100% - 3em);
   background: linear-gradient(0, var(--gc-bg-light), transparent 20%);
 }
+
 .menu {
   max-width: var(--gcp-max-boardsize, 100vh);
   pointer-events:none;
@@ -134,11 +143,13 @@ nav button {
 
   transition:all .5s ease-in-out;
   display: flex;
-  flex-flow: row;
-  align-items: flex-end ;
+  flex-flow: column;
   transform: translateY(0);
 }
-
+.condensed .menu {
+  flex-flow: row;
+  align-items: flex-end ;
+}
 .menu[data-hidden] {
   transform: translateY(100%);
 }
@@ -181,6 +192,7 @@ nav button {
   box-shadow: inset 0 0 5px;
   border-radius: 100%;
 }
+
 [data-player] .name {
   padding: 0 1em;
   white-space: nowrap;
@@ -208,7 +220,7 @@ nav button {
   color: var(--gc-txt-dark);
 }
 
-[data-player="WHITE"] {
+.condensed [data-player="WHITE"] {
   flex-flow: row-reverse;
   order: 1;
 }
@@ -225,9 +237,11 @@ button:hover {
 button[data-enabled] {
   background: var(--gc-bg);
 }
+
 button img {
   opacity: .6;
 }
+
 button[data-enabled] img {
   filter: invert(1)
 }

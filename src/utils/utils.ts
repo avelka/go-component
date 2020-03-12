@@ -271,7 +271,7 @@ export function getGhosts(path, pos) {
       ? variations
       : [treeRef[0][branchIndex + 1]];
     return ghosts.filter(i => i).map((g, i) => {
-      const inPath = (g.B || g.W) === (next.B || next.W);
+      const inPath = next && (g.B || g.W) === (next.B || next.W);
       return toMove({ ...g, inPath }, i);
     });
   } catch (e) {
@@ -355,6 +355,5 @@ export const conditionalStyles = (el: HTMLElement) => {
 }
 
 export const showMenu = (style: string) => {
-  console.log({ style, t: [STYLES.CONDENSED, STYLES.FULLSIZE, STYLES.NORMAL].includes(style) })
   return [STYLES.CONDENSED, STYLES.FULLSIZE, STYLES.NORMAL].includes(style);
 }

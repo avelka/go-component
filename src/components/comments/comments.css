@@ -1,11 +1,43 @@
 :host {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-div {
+
+.wrapper {
   display: flex;
   flex-flow: column;
-  align-items: flex-end;
+  height: 100%;
 }
+
+.comments {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  flex:1;
+}
+
+.comment-input {
+  display:flex;
+  flex-flow: row;
+  border-top: 2px solid var(--gc-bg-dark);
+  border-bottom: 2px solid var(--gc-bg-light);
+}
+
+.comment-input textarea {
+  background: var(--gc-bg-dark);
+  border:none;
+  outline: none;
+  flex:1;
+  padding: 5px;
+  font-size: inherit;
+  color: #fff;
+}
+
+.comment-input button {
+  background: var(--gc-bg-light);
+  border:none;
+  outline: none;
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;

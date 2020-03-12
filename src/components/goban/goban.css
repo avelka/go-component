@@ -38,7 +38,7 @@
   'board comments'
   'board tree';
   grid-template-columns: minmax(max-content, var(--gcp-max-boardsize, 100vh)) minmax(250px, 1fr);
-  grid-template-rows: auto 1fr 200px;
+  grid-template-rows: auto 1fr auto;
 
 }
 .goboard {
@@ -52,7 +52,19 @@
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(-5em);
+    transform: translateY(-10em);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0em);
+  }
+}
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(10em);
+    filter: blur(5px);
   }
   to {
     opacity: 1;
@@ -62,28 +74,33 @@
 .tree {
   grid-area: tree;
   width: 100%;
-  height:300px;
+  max-height: 40vh;
+  height: 100%;
   max-width: var(--gcp-max-boardsize, 100vh);
   background: var(--gc-bg-dark);
-  animation: slideIn .5s ease-in-out forwards;
+  animation: slideInBottom .5s ease-in-out forwards;
 }
-.condensed .tree {
 
+.condensed .tree {
   position:absolute;
   height: calc(100% - 3em);
   background: linear-gradient(var(--gc-bg-80) 50%, transparent);
+  animation: slideIn .5s ease-in-out forwards;
 }
+
 .controls {
   z-index: 5;
   grid-area: controls;
 }
+
 :not(.condensed) .controls {
   position: relative;
 }
+
 :not(.condensed) .comments {
   position: relative;
-  top: 3em;
   z-index: 0;
+  height: 100%;
 }
 
 .comments {

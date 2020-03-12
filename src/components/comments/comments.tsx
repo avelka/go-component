@@ -15,11 +15,17 @@ export class Comments {
     .slice(0, this.position)
     .filter(m => m[ATTR_SGF.COMMENT])
     return (
-      <div>
+      <div class="wrapper">
+        <div class="comments">
         {comments.map(m => <p>
             {m.order}:
             {m[ATTR_SGF.COMMENT]}
           </p>)}
+        </div>
+        <div class="comment-input">
+          <textarea></textarea>
+          <button>send</button>
+        </div>
       </div>
     );
   }

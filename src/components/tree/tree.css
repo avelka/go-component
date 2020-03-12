@@ -103,6 +103,5 @@
 }
 
 .stone:not([data-in-path]) {
-
   transform: scale(.6);
 }
