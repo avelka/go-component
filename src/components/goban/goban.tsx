@@ -79,23 +79,20 @@ export class Goban {
     const ghosts = getGhosts(this.currentPath, this.currentPosition)
     const isNext = ghosts.findIndex(g => isSamePosition(g, move))
     const { branchIndex, source: { treeRef, level }} = this.currentPath[this.currentPosition];
-    const isLastInbranch = branchIndex === (treeRef[0].length - 1);
 
     if (isNext < 0) {
       const node = [[toSGFObject(move)], []];
-
-      if (isLastInbranch && !treeRef[1].length) {
+      if (!ghosts.length) {
         treeRef[0] = [...treeRef[0], toSGFObject(move)];
       } else {
         const start = treeRef[0].slice(0, branchIndex + 1);
         const end = treeRef[0].slice(branchIndex + 1);
-        console.log({start, end})
         treeRef[0] = start;
-        treeRef[1] = [[end, [...treeRef[1]]], [[toSGFObject(move)], []]];
+        treeRef[1] = [[end, [...treeRef[1]]], node];
       }
     }
 
-    const newVariation = [...this.variations.slice(0, level), isNext < 0 ? treeRef[1].length - 1 : isNext]
+    const newVariation = [...this.variations.slice(0, level), isNext < 0 ? treeRef[1].length - 1 : isNext];
     this.updatePosition({order: this.currentPosition + 1, variation: newVariation})
   }
 
