@@ -67,16 +67,19 @@ export class Board {
   }
 
   render() {
+    // TODO: order need to be fixed
     const stones: any[] = (this.state || [])
-    .map(({order, state, x, y}) => ({
+    .map(({order, state, x, y}, i) => ({
       order: order,
+      index: i,
       color: state,
       xt: this.getPos(x) + (this.lineSpace / 2),
       yt: this.getPos(y) + (this.lineSpace / 2),
       x: this.getPos(x),
       y: this.getPos(y),
     }));
-    const last = stones.sort((a, b) => b.order - a.order)[0];
+
+    const last = [...stones].sort((a, b) => b.index - a.index)[0];
     const ghosts = this.ghosts.map(({state, x, y, inPath}, i) => {
       return ({
         color: state,
