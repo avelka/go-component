@@ -120,7 +120,6 @@ export class Goban {
         change = this.setMarker({current, type, coord});
       default:
         console.log({STONE_COMPOSED_UNIQUE, type})
-
     }
 
     treeRef[0][branchIndex] = {...current, ...change}
@@ -129,27 +128,27 @@ export class Goban {
 
   setMarker({type, current, coord}) {
     const labels = (current[type] || []);
-    const different = i => i !== coord;
+    const different = (i:Coordinates) => i !== coord;
     const filteredLabels = labels.filter(different);
     if (filteredLabels.length < labels.length) {
       return {[type]: filteredLabels};
     }
-    const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
+    const unify = (changes:any, type:string) => ({...changes, [type]: (current[type] || []).filter(different) });
     const unified = SYMBOL_COMPOSED_UNIQUE.reduce(unify ,{});
     return {...unified, [type]: [...(unified[type] || []), coord ]};
   }
 
   setStone({current, type, coord}) {
 
-    const different = i => i !== coord;
-    const unify = (changes, type) => ({...changes, [type]: (current[type] || []).filter(different) });
+    const different = (i:Coordinates) => i !== coord;
+    const unify = (changes:any, type:string) => ({...changes, [type]: (current[type] || []).filter(different) });
 
     const labels = (current[type] || []);
     const filteredLabels = labels.filter(different);
     if (filteredLabels.length < labels.length) {
       return {[type]: filteredLabels};
     }
-    const unified = STONE_COMPOSED_UNIQUE.reduce(unify ,{});
+    const unified = STONE_COMPOSED_UNIQUE.reduce(unify, {});
     return {...unified, [type]: [...(unified[type] || []), coord ]};
   }
 
@@ -264,18 +263,17 @@ export class Goban {
       this.updateOptions({zoom: minMax(10, this.options.zoom -(Math.sign(ev.deltaY)), 200)});
     }
   }
+
   @Listen('resize', { target: 'window' })
   handleResize() {
     this.updateLayout();
   }
-
+  componentDidRender() {
+    this.updateLayout();
+  }
 
   componentDidUpdate() {
     this.handleAutoPlay(this.options);
-  }
-
-  componentDidRender() {
-    this.updateLayout();
   }
 
   updateLayout() {
@@ -288,20 +286,23 @@ export class Goban {
     }
   }
 
-
   render() {
+
     const meta = {
       ...this.party.meta,
       ...this.party.info,
       players: this.party.players,
     };
+
     const overlay = getBoardState(this.board.overlay).map(o => {
       return {
         ...o,
         boardState: this.bs.at(o.x, o.y).state || 'empty'
       }
     });
+
     const score = getScore(this.board.history);
+
     return (
       <div class={`goban ${this.options.style}`} tabindex="0">
         <img class="focus-indicator" src={keyboard}/>
@@ -342,7 +343,7 @@ export class Goban {
 
   autoPlay(interval: number) {
     return window.setInterval(() => {
-      if (MODE.READ) { this.updatePosition({order: this.currentPosition + 1}) };
+      if (MODE.READ === this.options.mode) { this.updatePosition({order: this.currentPosition + 1}) };
     }, interval * 1000)
   }
 
