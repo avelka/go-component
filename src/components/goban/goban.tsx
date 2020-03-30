@@ -66,7 +66,7 @@ export class Goban {
         case MODE.PLAY:
         case MODE.READ:
           this.rule.validate(this.board.board, move);
-          this.updateTree(move);
+          this.updateTree(move, this.board.board);
           break;
       }
 
@@ -75,12 +75,13 @@ export class Goban {
     }
   }
 
-  updateTree(move: any) {
-    const ghosts = getGhosts(this.currentPath, this.currentPosition)
+  updateTree(move: any, board: any) {
+    const state = getBoardState(board);
+    const position = state.length - 1;
+    const ghosts = getGhosts(this.currentPath, position)
     const isNext = ghosts.findIndex(g => isSamePosition(g, move))
-    const { branchIndex, source: { treeRef, level }} = this.currentPath[this.currentPosition];
-
-    if (isNext < 0) {
+    const { branchIndex, source: { treeRef, level }} = this.currentPath[position];
+    if (isNext === -1) {
       const node = [[toSGFObject(move)], []];
       if (!ghosts.length) {
         treeRef[0] = [...treeRef[0], toSGFObject(move)];
@@ -116,7 +117,8 @@ export class Goban {
       case SYMBOL_COMPOSED_UNIQUE.includes(type):
         change = this.setMarker({current, type, coord});
       default:
-        console.log({STONE_COMPOSED_UNIQUE, type})
+        // if we dont know the marker we switch to edit mode
+        this.updateOptions({mode: MODE.PLAY })
     }
 
     treeRef[0][branchIndex] = {...current, ...change}
@@ -136,7 +138,6 @@ export class Goban {
   }
 
   setStone({current, type, coord}) {
-
     const different = (i:Coordinates) => i !== coord;
     const unify = (changes:any, type:string) => ({...changes, [type]: (current[type] || []).filter(different) });
 
@@ -196,9 +197,6 @@ export class Goban {
 
     if (!isTyping(ev)) {
       switch(ev.key) {
-        case 'd':
-          console.log('[DEBUG]', this.party.tree, this.currentPath, this.board.history);
-          break;
         case 'ArrowDown':
         case 'ArrowUp':
           const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
@@ -252,6 +250,13 @@ export class Goban {
           break;
       }
     }
+  }
+  @Listen('addComment')
+  addComment(ev: CustomEvent) {
+    const { branchIndex, source: { treeRef }} = this.currentPath[this.currentPosition - 1];
+    const current = treeRef[0][branchIndex];
+    current[ATTR_SGF.COMMENT] = ev.detail.comment;
+    this.updatePosition({ order: this.currentPosition });
   }
 
   @Listen('wheel', { target: 'parent' })
@@ -361,13 +366,15 @@ export class Goban {
     }
   }
 
-  updatePosition({order, variation = []}) {
+  updatePosition({order , variation = []}) {
+
     if (variation.length && !compareBranch(this.variations, variation)) {
       this.variations = variation;
     }
 
     this.currentPath = getCurrentPath(this.party.tree, this.variations);
     this.currentPosition = minMax(0, order, this.currentPath.length - 1);
+
     this.board = this.getGameState();
   }
 

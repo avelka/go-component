@@ -4,6 +4,11 @@ interface Coord {
   x: number
   y: number
 }
+interface Move extends Coord {
+  state?: string;
+  order?: number;
+  comment?: string;
+}
 
 export function format(first: string, middle: string, last: string): string {
   return (
@@ -107,11 +112,11 @@ export const extractVariations = (tree, path = [], lvl = 0, order = 0) => {
   const branch = path && path[lvl] || 0;
 
   const flat = main.map((m, o) => ({
-    ...m, order: o + order,
+    ...m,
     branchIndex: o,
     source: {
       treeRef: tree,
-      pos: order - 1,
+      pos: order,
       branch,
       level: lvl,
       variations: variations.length,
@@ -137,7 +142,7 @@ export function toTree(collection: any[], o: number = 0) {
   return moves;
 }
 
-export const toMove = (m: any, i: number) => {
+export const toMove = (m: any, i: number): Move => {
 
   const color = (m.B || m.W ? (m.B ? BLACK : WHITE) : EMPTY);
   return {
@@ -155,15 +160,15 @@ export function getBoardState(board: any) {
     .filter((i: any) => i.state || i.label);
 }
 
-export function getScore(history) {
-  return (history || []).reduce((c, { state, captured = [] }) => {
+export function getScore(history: any[]): Map<string, any> {
+  return (history || []).reduce((c: Map<string, any>, { state, captured = [] }: any) => {
     const color = state.toUpperCase();
     c.set(color, (c.has(color) ? c.get(color) : 0) + captured.length)
     return new Map(c);
   }, new Map());
 }
 
-export function baseVariation(forks: any[]) {
+export function baseVariation(forks: any[]): any {
   const def = {
     source: 0,
     pos: 0,
@@ -261,16 +266,16 @@ export const animateCirclePosition = (circle, o, n) => {
   });
 }
 
-export function getGhosts(path, pos) {
+export function getGhosts(path, pos): Move[] {
   try {
     const { branchIndex, source: { treeRef } } = path[pos];
     const isLastInbranch = branchIndex === (treeRef[0].length - 1);
     const next = path[pos + 1];
-    const variations = treeRef[1].map(i => i[0]).map(i => i[0]);
+    const variations = treeRef[1].map(i => i[0]).map((i: any) => i[0]);
     const ghosts = isLastInbranch
       ? variations
       : [treeRef[0][branchIndex + 1]];
-    return ghosts.filter(i => i).map((g, i) => {
+    return ghosts.filter((i: any) => !!i).map((g: any, i: number) => {
       const inPath = next && (g.B || g.W) === (next.B || next.W);
       return toMove({ ...g, inPath }, i);
     });
@@ -278,18 +283,17 @@ export function getGhosts(path, pos) {
     console.error(e);
     return [];
   }
-
 }
 
 export const cloneArray = (items: any[]) => items.map(item => Array.isArray(item) ? cloneArray(item) : item);
 
-export const toSGFObject = (move) => {
+export const toSGFObject = (move: Move): any => {
   const color = move.state === BLACK ? 'B' : 'W';
   const coord = '' + n2a(move.x) + n2a(move.y);
   return { [color]: coord };
 }
 
-export const nextPlayer = pos => {
+export const nextPlayer = (pos: number): string => {
   return pos % 2 ? WHITE : BLACK;
 }
 
@@ -299,7 +303,8 @@ export function alphabetLabelGenerator(labels: any[]) {
     .map(e => e[1].toLowerCase())));
   return alphabet(alpha.length + 1).find((l: string) => !alpha.includes(l)).toUpperCase();
 }
-const numberList = size => Array(size).fill(null).map((_, i) => i + 1);
+
+const numberList = (size: number): number[] => Array(size).fill(null).map((_, i) => i + 1);
 
 export function numericLabelGenerator(labels: any[]) {
   const num = Array.from(new Set(labels
@@ -308,11 +313,9 @@ export function numericLabelGenerator(labels: any[]) {
   return numberList(num.length + 1).find((l: number) => !num.includes(l)) || 1;
 }
 
-
 export function getHoshi(size: number): Coord[] {
   const side = minMax(1, (Math.round(size / 3) - 1), 3);
   const oposite = size - side - 1;
-
   let centerPoints: Coord[] = [];
 
   if (size % 2) {
@@ -340,6 +343,7 @@ export const STYLES = {
   NORMAL: 'normal',
   FULLSIZE: 'fullsize'
 }
+
 export const conditionalStyles = (el: HTMLElement) => {
   const { width: msize } = el.getBoundingClientRect()
   switch (true) {

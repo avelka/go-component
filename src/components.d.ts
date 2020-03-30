@@ -93,6 +93,7 @@ declare namespace LocalJSX {
     'state'?: any[];
   }
   interface GcComments {
+    'onAddComment'?: (event: CustomEvent<any>) => void;
     'path'?: any[];
     'position'?: number;
   }

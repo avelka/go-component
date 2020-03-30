@@ -51,6 +51,7 @@
 }
 
 .stone {
+  pointer-events: all;
   flex-shrink: 0;
   display: flex;
   width: 3em;

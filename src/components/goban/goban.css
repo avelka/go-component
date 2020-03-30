@@ -86,6 +86,7 @@
   height: calc(100% - 3em);
   background: linear-gradient(var(--gc-bg-80) 50%, transparent);
   animation: slideIn .5s ease-in-out forwards;
+  pointer-events:none;
 }
 
 .controls {
@@ -108,5 +109,6 @@
   width: 100%;
   height: calc(100% - 3em);
   max-width: var(--gcp-max-boardsize, 100vh);
+  pointer-events: none;
 }
 

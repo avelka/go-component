@@ -67,10 +67,9 @@ export class Board {
   }
 
   render() {
-    // TODO: order need to be fixed
     const stones: any[] = (this.state || [])
     .map(({order, state, x, y}, i) => ({
-      order: order,
+      order: order + 1,
       index: i,
       color: state,
       xt: this.getPos(x) + (this.lineSpace / 2),
@@ -79,7 +78,7 @@ export class Board {
       y: this.getPos(y),
     }));
 
-    const last = [...stones].sort((a, b) => b.index - a.index)[0];
+    const last = [...stones].sort((a, b) => b.order - a.order)[0];
     const ghosts = this.ghosts.map(({state, x, y, inPath}, i) => {
       return ({
         color: state,
@@ -339,15 +338,16 @@ export class Board {
           <path d="M 5 5 L 15 15 M 5 15 L 15 5" fill="transparent" strokeWidth="1" stroke="#000" opacity="0.7"/>
         </symbol>
         <symbol id={`marker_label_onempty`} width={size} height={size} viewBox="0 0 20 20">
-          <circle cx="10" cy="10" r="6" fill="rgb(223, 178, 96)"/>
+          <circle class="woodElement" cx="10" cy="10" r="6"/>
         </symbol>
     </g>
     );
   }
   renderStone({color, x, y, xt, yt, order}) {
+    const displayOrder = Math.max(0, order);
     return <g class={color}>
       <use xlinkHref={`#stone_${color}`} x={x}  y={y}/>
-      {this.options.order && order && <text x={xt} y={yt}>{order}</text>}
+      {this.options.order && displayOrder && <text x={xt} y={yt}>{displayOrder}</text>}
     </g>
   }
 

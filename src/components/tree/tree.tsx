@@ -26,6 +26,7 @@ export class Tree {
   isInPath(path = []) {
    return compareBranch(this.variations, path);
   }
+
   showBranch(branch, order = 0, vpath = []) {
     const [main, variations = []] = branch;
     return (<div class="tree-view">

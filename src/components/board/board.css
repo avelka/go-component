@@ -14,7 +14,7 @@
   max-width: var(--gcp-max-boardsize, 100vh);
   overflow: hidden;
 }
-
+.woodElement,
 .woodboard {
   fill: var(--gc-bg-board);
 }
@@ -48,9 +48,21 @@ text.onempty,
 text.onwhite,
 .white text {
   fill: #000;
+  stroke: #ffffff88;
 }
 text.onblack,
 .black text {
   fill: #fff;
+  stroke: #00000088;
 }
 
+.stones text {
+  font-size: 16px;
+
+}
+.stones text,
+.markers text {
+  paint-order: stroke;
+  stroke-width: 3px;
+  font-weight: 500;
+}

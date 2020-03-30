@@ -6,6 +6,7 @@
   display: flex;
   flex-flow: column;
   height: 100%;
+  pointer-events: none;
 }
 
 .comments {
@@ -20,6 +21,7 @@
   flex-flow: row;
   border-top: 2px solid var(--gc-bg-dark);
   border-bottom: 2px solid var(--gc-bg-light);
+  pointer-events: all;
 }
 
 .comment-input textarea {
