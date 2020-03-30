@@ -66,7 +66,7 @@ export class Goban {
         case MODE.PLAY:
         case MODE.READ:
           this.rule.validate(this.board.board, move);
-          this.updateTree(move, this.board.board);
+          this.updateTree(move);
           break;
       }
 
