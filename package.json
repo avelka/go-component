@@ -1,6 +1,6 @@
 {
   "name": "@avelka/goban",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Stencil Component Starter",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -28,8 +28,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@sabaki/sgf": "^3.4.4",
     "kifu": "git+https://github.com/avelka/kifu.js.git",
-    "markdown-it": "^10.0.0"
+    "markdown-it": "^10.0.0",
+    "sgfgrove": "^1.0.8"
   }
 }
