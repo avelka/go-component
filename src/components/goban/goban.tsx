@@ -75,12 +75,11 @@ export class Goban {
     }
   }
 
-  updateTree(move: any, board: any) {
-    const state = getBoardState(board);
-    const position = state.length - 1;
-    const ghosts = getGhosts(this.currentPath, position)
+  updateTree(move: any) {
+
+    const ghosts = getGhosts(this.currentPath, this.currentPosition)
     const isNext = ghosts.findIndex(g => isSamePosition(g, move))
-    const { branchIndex, source: { treeRef, level }} = this.currentPath[position];
+    const { branchIndex, source: { treeRef, level }} = this.currentPath[this.currentPosition];
     if (isNext === -1) {
       const node = [[toSGFObject(move)], []];
       if (!ghosts.length) {
