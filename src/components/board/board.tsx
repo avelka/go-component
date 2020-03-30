@@ -1,5 +1,5 @@
 import { Component, h, Prop, Element, Event, EventEmitter } from '@stencil/core';
-import Debounce from 'debounce-decorator';
+
 import { minMax, animateCirclePosition, BLACK, WHITE, n2a, getHoshi } from '../../utils/utils';
 
 @Component({
@@ -36,7 +36,6 @@ export class Board {
   lines =  this.getLines();
   coordMarkers = this.getCoordMarkers();
 
-  @Debounce(100)
   handleOver(e: MouseEvent) {
     this.target = this.getPosFromCoord(e.x, e.y);
     const pointer = this.el.querySelector('.target');
