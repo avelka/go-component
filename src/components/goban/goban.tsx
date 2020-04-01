@@ -1,4 +1,4 @@
-import { Component, Prop, State, h, Listen, Element } from '@stencil/core';
+import { Component, Prop, State, h, Listen, Element, Watch } from '@stencil/core';
 import { minMax, getCurrentPath, getScore, parse, compareBranch, getBoardState, dowloadAsSGF, getGhosts, toSGFObject, nextPlayer, isSamePosition, n2a, MODE, ATTR_SGF, alphabetLabelGenerator, numericLabelGenerator, conditionalStyles, showMenu, STYLES } from '../../utils/utils';
 import { BoardService, RuleService } from 'kifu';
 
@@ -33,11 +33,18 @@ export class Goban {
     }
   };
 
-  party = parse(this.sgf);
+  @State() party = parse(this.sgf);
   @State() currentPath = getCurrentPath(this.party.tree, this.variations)
   @State() board = this.getGameState();
   timer: number;
   @State() displayControls = false;
+
+  @Watch("sgf")
+  onSgfChange() {
+    this.party = parse(this.sgf);
+    this.currentPath = getCurrentPath(this.party.tree, this.variations)
+    this.board = this.getGameState();
+  }
 
   @Listen('selectPosition')
   handlePosition(event: CustomEvent) {
