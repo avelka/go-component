@@ -43,6 +43,7 @@ export class Goban {
 
   @Watch("sgf")
   onSgfChange() {
+    this.currentPosition = 0;
     this.party = parse(this.sgf);
     this.currentPath = getCurrentPath(this.party.tree, this.variations)
     this.board = this.getGameState();
