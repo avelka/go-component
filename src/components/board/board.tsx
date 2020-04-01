@@ -36,12 +36,14 @@ export class Board {
   @State() lineSpace = this.getLineSpace(this.width, this.size, this.padding)
   @State() lines = this.getLines();
   @State() coordMarkers = this.getCoordMarkers();
-
+  @State() linesPath = [this.innerPath, ...this.lines].join(' ');
   @Watch('size')
-  onSizeChange() {
+  onSizeChange(newSize: number) {
+    console.log({newSize});
     this.lineSpace = this.getLineSpace(this.width, this.size, this.padding)
     this.lines = this.getLines();
     this.coordMarkers = this.getCoordMarkers();
+    this.linesPath = [this.innerPath, ...this.lines].join(' ');
   }
 
   handleOver(e: MouseEvent) {
@@ -241,7 +243,7 @@ export class Board {
         {this.renderStoneSymbol(this.lineSpace, WHITE)}
         {markers.length && this.renderMarkersSymbol(this.lineSpace) }
         <path class="woodboard" data-textured={this.options.style?.texture} d={this.outerPath}></path>
-        <path class="lines" d={[this.innerPath, ...this.lines].join(' ')}></path>
+        <path class="lines" d={this.linesPath}></path>
         {hoshis.map(({x, y}) => <use xlinkHref="#hoshi" x={x} y={y}/>)}
         <g class="coords">{this.coordMarkers.map(({m, x, y}) => <text x={x} y={y}>{m}</text>)}</g>
         <g class="stones" filter="url(#MyFilter)">
