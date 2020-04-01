@@ -13,9 +13,11 @@ import keyboard from '../../assets/keybpoard.svg';
   shadow: true
 })
 export class Goban {
+  @Element() el: HTMLElement;
+
   bs = new BoardService();
   rule = new RuleService();
-  @Element() el: HTMLElement;
+
   @Prop() sgf = null;
   @Prop() currentPosition: number = 0;
   @State() variations: any = [0];
@@ -48,7 +50,7 @@ export class Goban {
 
   @Listen('selectPosition')
   handlePosition(event: CustomEvent) {
-   this.updatePosition(event.detail);
+    this.updatePosition(event.detail);
   }
 
   @Listen('optionChange')

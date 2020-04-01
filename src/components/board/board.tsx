@@ -1,4 +1,4 @@
-import { Component, h, Prop, Element, Event, EventEmitter } from '@stencil/core';
+import { Component, h, Prop, Element, Event, EventEmitter, State, Watch } from '@stencil/core';
 
 import { minMax, animateCirclePosition, BLACK, WHITE, n2a, getHoshi } from '../../utils/utils';
 
@@ -32,9 +32,17 @@ export class Board {
   outerPath = `M 0, 0 H ${this.width} V ${this.width} H 0 V 0`;
   innerPath = `M ${this.padding}, ${this.padding} H ${this.innerGridSize} V ${this.innerGridSize} H ${this.padding} V ${this.padding}`;
   getLineSpace = (w:number, s:number, p:number) => (w - 2 * p) / (s - 1);
-  lineSpace = this.getLineSpace(this.width, this.size, this.padding)
-  lines =  this.getLines();
-  coordMarkers = this.getCoordMarkers();
+
+  @State() lineSpace = this.getLineSpace(this.width, this.size, this.padding)
+  @State() lines = this.getLines();
+  @State() coordMarkers = this.getCoordMarkers();
+
+  @Watch('size')
+  onSizeChange() {
+    this.lineSpace = this.getLineSpace(this.width, this.size, this.padding)
+    this.lines = this.getLines();
+    this.coordMarkers = this.getCoordMarkers();
+  }
 
   handleOver(e: MouseEvent) {
     this.target = this.getPosFromCoord(e.x, e.y);
