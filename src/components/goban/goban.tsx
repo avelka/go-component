@@ -89,7 +89,7 @@ export class Goban {
 
     const ghosts = getGhosts(this.currentPath, this.currentPosition)
     const isNext = ghosts.findIndex(g => isSamePosition(g, move))
-    const { branchIndex, source: { treeRef, level }} = this.currentPath[this.currentPosition];
+    const { branchIndex, source: { treeRef, level } } = this.currentPath[this.currentPosition];
     if (isNext === -1) {
       const node = [[toSGFObject(move)], []];
       if (!ghosts.length) {
@@ -103,11 +103,11 @@ export class Goban {
     }
 
     const newVariation = [...this.variations.slice(0, level), isNext < 0 ? treeRef[1].length - 1 : isNext];
-    this.updatePosition({order: this.currentPosition + 1, variation: newVariation})
+    this.updatePosition({ order: this.currentPosition + 1, variation: newVariation })
   }
 
-  editCurrent({x, y}: any) {
-    const { branchIndex, source: { treeRef }} = this.currentPath[this.currentPosition];
+  editCurrent({ x, y }: any) {
+    const { branchIndex, source: { treeRef } } = this.currentPath[this.currentPosition];
     const current = treeRef[0][branchIndex];
     const type = this.options.marker;
     const coord = n2a(x) + n2a(y);
@@ -115,61 +115,61 @@ export class Goban {
     let change: any;
     switch (true) {
       case STONE_COMPOSED_UNIQUE.includes(type):
-        change = this.setStone({current, type, coord})
+        change = this.setStone({ current, type, coord })
         break;
       case type === ATTR_SGF.LABEL_ALPHA:
-        change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: alphabetLabelGenerator });
+        change = this.setLabel({ type: ATTR_SGF.LABEL, current, coord, generator: alphabetLabelGenerator });
         break;
       case type === ATTR_SGF.LABEL_NUMERIC:
-        change = this.setLabel({type: ATTR_SGF.LABEL, current, coord, generator: numericLabelGenerator });
+        change = this.setLabel({ type: ATTR_SGF.LABEL, current, coord, generator: numericLabelGenerator });
         break;
       case SYMBOL_COMPOSED_UNIQUE.includes(type):
-        change = this.setMarker({current, type, coord});
+        change = this.setMarker({ current, type, coord });
       default:
         // if we dont know the marker we switch to edit mode
-        this.updateOptions({mode: MODE.PLAY })
+        this.updateOptions({ mode: MODE.PLAY })
     }
 
-    treeRef[0][branchIndex] = {...current, ...change}
-    this.updatePosition({order: this.currentPosition});
+    treeRef[0][branchIndex] = { ...current, ...change }
+    this.updatePosition({ order: this.currentPosition });
   }
 
-  setMarker({type, current, coord}) {
+  setMarker({ type, current, coord }) {
     const labels = (current[type] || []);
-    const different = (i:Coordinates) => i !== coord;
+    const different = i => i !== coord;
     const filteredLabels = labels.filter(different);
     if (filteredLabels.length < labels.length) {
-      return {[type]: filteredLabels};
+      return { [type]: filteredLabels };
     }
-    const unify = (changes:any, type:string) => ({...changes, [type]: (current[type] || []).filter(different) });
-    const unified = SYMBOL_COMPOSED_UNIQUE.reduce(unify ,{});
-    return {...unified, [type]: [...(unified[type] || []), coord ]};
+    const unify = (changes: any, type: string) => ({ ...changes, [type]: (current[type] || []).filter(different) });
+    const unified = SYMBOL_COMPOSED_UNIQUE.reduce(unify, {});
+    return { ...unified, [type]: [...(unified[type] || []), coord] };
   }
 
-  setStone({current, type, coord}) {
-    const different = (i:Coordinates) => i !== coord;
-    const unify = (changes:any, type:string) => ({...changes, [type]: (current[type] || []).filter(different) });
+  setStone({ current, type, coord }) {
+    const different = i => i !== coord;
+    const unify = (changes: any, type: string) => ({ ...changes, [type]: (current[type] || []).filter(different) });
 
     const labels = (current[type] || []);
     const filteredLabels = labels.filter(different);
     if (filteredLabels.length < labels.length) {
-      return {[type]: filteredLabels};
+      return { [type]: filteredLabels };
     }
     const unified = STONE_COMPOSED_UNIQUE.reduce(unify, {});
-    return {...unified, [type]: [...(unified[type] || []), coord ]};
+    return { ...unified, [type]: [...(unified[type] || []), coord] };
   }
 
-  setLabel({type, current, coord, generator}) {
+  setLabel({ type, current, coord, generator }) {
     const different = ([i]) => i !== coord;
     const labels = (current[type] || []);
     const filteredLabels = labels.filter(different);
 
     if (filteredLabels.length < labels.length) {
-      return {[type]: filteredLabels};
+      return { [type]: filteredLabels };
     }
 
     const newLabel = [coord, generator(labels)];
-    return {[type]: [...labels, newLabel ]};
+    return { [type]: [...labels, newLabel] };
   }
 
   updateOptions(change: any) {
@@ -185,7 +185,7 @@ export class Goban {
   }
 
   @Listen('keydown')
-  keydownComponent(ev: KeyboardEvent){
+  keydownComponent(ev: KeyboardEvent) {
     if (!this.options.allowWindowsEvent) {
       this.handleKeydown(ev);
     }
@@ -205,7 +205,7 @@ export class Goban {
     }
 
     if (!isTyping(ev)) {
-      switch(ev.key) {
+      switch (ev.key) {
         case 'ArrowDown':
         case 'ArrowUp':
           const inc: number = ev.key == 'ArrowUp' ? -1 : 1;
@@ -214,64 +214,64 @@ export class Goban {
         case 'ArrowLeft':
         case 'ArrowRight':
           const dir: number = ev.key == 'ArrowLeft' ? -1 : 1;
-          const speed:number = ev.shiftKey ? 10 : 1;
-          this.updatePosition({order: this.currentPosition + dir * speed });
+          const speed: number = ev.shiftKey ? 10 : 1;
+          this.updatePosition({ order: this.currentPosition + dir * speed });
           break;
         case 'o':
         case 'O':
-          this.updateOptions({order: !this.options.order});
+          this.updateOptions({ order: !this.options.order });
           break;
         case 't':
         case 'T':
-          this.updateOptions({tree: !this.options.tree});
+          this.updateOptions({ tree: !this.options.tree });
           break;
         case 'n':
         case 'N':
-          this.updateOptions({controls: !this.options.controls});
+          this.updateOptions({ controls: !this.options.controls });
           break;
         case 'c':
         case 'C':
-          this.updateOptions({comments: !this.options.comments});
+          this.updateOptions({ comments: !this.options.comments });
           break;
         case 'e':
         case 'E':
-          this.updateOptions({mode: MODE.EDIT});
+          this.updateOptions({ mode: MODE.EDIT });
           break;
         case 'p':
         case 'P':
-          this.updateOptions({mode: MODE.PLAY});
+          this.updateOptions({ mode: MODE.PLAY });
           break;
         case 'r':
         case 'R':
-          this.updateOptions({mode: MODE.READ});
+          this.updateOptions({ mode: MODE.READ });
           break;
         case ' ':
-          this.updateOptions({play: !this.options.play});
+          this.updateOptions({ play: !this.options.play });
           break;
         case '+':
-          this.updateOptions({zoom: minMax(10, this.options.zoom + 1, 200)});
+          this.updateOptions({ zoom: minMax(10, this.options.zoom + 1, 200) });
           break;
         case '-':
-          this.updateOptions({zoom: minMax(10, this.options.zoom - 1, 200)});
+          this.updateOptions({ zoom: minMax(10, this.options.zoom - 1, 200) });
           break;
         case '=':
-          this.updateOptions({zoom: 100});
+          this.updateOptions({ zoom: 100 });
           break;
       }
     }
   }
   @Listen('addComment')
   addComment(ev: CustomEvent) {
-    const { branchIndex, source: { treeRef }} = this.currentPath[this.currentPosition - 1];
+    const { branchIndex, source: { treeRef } } = this.currentPath[this.currentPosition - 1];
     const current = treeRef[0][branchIndex];
     current[ATTR_SGF.COMMENT] = ev.detail.comment;
     this.updatePosition({ order: this.currentPosition });
   }
 
-  @Listen('wheel', { target: 'parent' })
+  @Listen('wheel', { target: 'window' })
   handleScroll(ev: WheelEvent) {
     if (ev.ctrlKey) {
-      this.updateOptions({zoom: minMax(10, this.options.zoom -(Math.sign(ev.deltaY)), 200)});
+      this.updateOptions({ zoom: minMax(10, this.options.zoom - (Math.sign(ev.deltaY)), 200) });
     }
   }
 
@@ -290,10 +290,12 @@ export class Goban {
   updateLayout() {
     const style = conditionalStyles(this.el);
     if (this.options.style !== style) {
-      this.updateOptions({style,
+      this.updateOptions({
+        style,
         comments: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style),
-        menu: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style) });
-        this.displayControls = showMenu(this.options.style);
+        menu: [STYLES.FULLSIZE, STYLES.NORMAL].includes(style)
+      });
+      this.displayControls = showMenu(this.options.style);
     }
   }
 
@@ -316,7 +318,7 @@ export class Goban {
 
     return (
       <div class={`goban ${this.options.style}`} tabindex="0">
-        <img class="focus-indicator" src={keyboard}/>
+        <img class="focus-indicator" src={keyboard} />
         <gc-board
           class="goboard"
           options={this.options}
@@ -326,35 +328,35 @@ export class Goban {
           ghosts={getGhosts(this.currentPath, this.currentPosition)}>
         </gc-board>
 
-          {this.displayControls && <gc-controls
-            class="controls"
-            data={meta}
-            score={score}
-            options={this.options}
+        {this.displayControls && <gc-controls
+          class="controls"
+          data={meta}
+          score={score}
+          options={this.options}
+          variations={this.variations}
+          history={this.currentPath}
+          position={this.currentPosition}>
+        </gc-controls>}
+        { this.options.comments &&
+          <gc-comments
+            class="comments"
+            position={this.currentPosition}
+            path={this.currentPath}>
+          </gc-comments>}
+        { this.options.tree &&
+          <gc-tree class="tree"
             variations={this.variations}
-            history={this.currentPath}
+            tree={this.party.tree}
+            current={this.currentPath}
             position={this.currentPosition}>
-          </gc-controls> }
-          { this.options.comments &&
-            <gc-comments
-              class="comments"
-              position={this.currentPosition}
-              path={this.currentPath}>
-            </gc-comments> }
-          { this.options.tree &&
-            <gc-tree class="tree"
-              variations={this.variations}
-              tree={this.party.tree}
-              current={this.currentPath}
-              position={this.currentPosition}>
-            </gc-tree> }
+          </gc-tree>}
       </div>
     );
   }
 
   autoPlay(interval: number) {
     return window.setInterval(() => {
-      if (MODE.READ === this.options.mode) { this.updatePosition({order: this.currentPosition + 1}) };
+      if (MODE.READ === this.options.mode) { this.updatePosition({ order: this.currentPosition + 1 }) };
     }, interval * 1000)
   }
 
@@ -363,19 +365,19 @@ export class Goban {
     this.timer = null;
   }
 
-  componentDidUnload() {
+  disconnectedCallback() {
     this.clearAutoPlay()
   }
 
-  handleAutoPlay({interval, play}) {
+  handleAutoPlay({ interval, play }) {
     if (play && !this.timer) {
       this.timer = this.autoPlay(interval);
-    } else if (this.timer && !play){
+    } else if (this.timer && !play) {
       this.clearAutoPlay();
     }
   }
 
-  updatePosition({order , variation = []}) {
+  updatePosition({ order, variation = [] }) {
 
     if (variation.length && !compareBranch(this.variations, variation)) {
       this.variations = variation;
@@ -391,15 +393,15 @@ export class Goban {
     const val = this.currentPath
       .slice(0, this.currentPosition + 1)
       .reduce(
-        (a: any, m:any) => a.set(m),
+        (a: any, m: any) => a.set(m),
         this.bs.init(this.party.info.size)
       );
     return val;
   }
 
-  changeNextFork(inc:number) {
+  changeNextFork(inc: number) {
     const current = this.currentPath[this.currentPosition].source;
-    const {source: nextFork} = this.currentPath.find(p => p.source.level == current.level + 1) || {};
+    const { source: nextFork } = this.currentPath.find(p => p.source.level == current.level + 1) || {};
 
     if (nextFork) {
       const currentFork = this.variations[nextFork.level - 1];

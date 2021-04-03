@@ -2,8 +2,8 @@
   "name": "@avelka/goban",
   "version": "0.0.11",
   "description": "Stencil Component Starter",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.js",
   "es2015": "dist/esm/index.mjs",
   "es2017": "dist/esm/index.mjs",
   "types": "dist/types/index.d.ts",
@@ -23,7 +23,7 @@
     "prepare": "npm run build"
   },
   "devDependencies": {
-    "@stencil/core": "^1.8.4",
+    "@stencil/core": "^2.5.2",
     "debounce-decorator": "^1.0.6"
   },
   "license": "MIT",
