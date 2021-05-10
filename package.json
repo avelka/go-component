@@ -28,8 +28,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "kifu": "git+https://github.com/avelka/kifu.js.git",
-    "markdown-it": "^10.0.0",
+    "kifu": "^1.0.16",
     "sgfgrove": "^1.0.8"
   }
 }
