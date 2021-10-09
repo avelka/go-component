@@ -194,7 +194,7 @@ export function compareBranch(current = [], test = []) {
   }, true);
 }
 
-export function parse(sgf: any) {
+export function parse(sgf: string) {
   const parsed = sgfgrove.parse(sgf);
 
   const [[meta]] = parsed;
