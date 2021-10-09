@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  min-height: 5em;
+}
+
+.tree-view {
+  display: flex;
+  border-radius: var(--container-radius);
+  padding: .5em;
+  width:auto;
+  overflow: auto;
+}
+
+.tree-view .tree-view  {
+  padding: 0;
+  margin:0;
+  position: relative;
+  overflow: visible;
+}
+
+.stones-wrapper {
+  display: flex;
+  position:relative;
+}
+.stones-wrapper:before {
+  content:"";
+  display: block;
+  height:2px;
+  background: linear-gradient(-90deg, transparent, black);
+  position: absolute;
+  top: calc(1.5em - 2px) ;
+  width: calc(100% - 1em);
+  transform: translateX(2em);
+}
+.tree-view + .tree-view:before {
+  z-index:0;
+  content: "";
+  display:block;
+  position:absolute;
+  height:2px;
+  background: linear-gradient(90deg, transparent, black);
+  width:4.5em;
+  transform-origin: top left;
+  transform: rotate(45deg) translate(-2em, 0);
+}
+
+
+
+.stone[data-shared] {
+  opacity: .1;
+}
+
+.stone {
+  pointer-events: all;
+  flex-shrink: 0;
+  display: flex;
+  width: 3em;
+  height: 3em;
+  margin:.5em;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100%;
+  border:none;
+  background: var(--gc-empty-stone-bg);
+  border: 2px solid currentColor;
+  color: var(--gc-empty-stone-txt);
+  transition: .3s ease-in-out;
+  transform: scale(.9);
+  z-index:5;
+}
+.stone[data-color="black"] {
+  border: none;
+  background: var(--gc-black-stone-bg);
+  box-shadow: var(--gc-black-stone-shadow);
+}
+.stone[data-color="white"] {
+  border: none;
+  background: var(--gc-white-stone-bg);
+  box-shadow: var(--gc-white-stone-shadow);
+  color: var(--gc-white-stone-txt);
+}
+.stone:focus {
+  outline:none
+}
+
+.stone:hover {
+  transform: translateY(-2px) scale(.9);
+}
+
+.stone:active {
+  transform: scale(.9)
+}
+.stone[data-is-current] {
+  font-weight: 700;
+  transform: scale(1.1);
+  outline: 2px solid var(--gc-bg-light);
+}
+
+.variations {
+  display:flex;
+  flex-flow: column;
+  max-height: 3em;
+  overflow: hidden;
+}
+
+.stone:not([data-in-path]) {
+  transform: scale(.6);
+}

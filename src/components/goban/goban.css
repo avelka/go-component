@@ -1,0 +1,114 @@
+.goban {
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+  position: relative;
+  background: var(--gc-bg);
+  transition: .3s ease-in-out all;
+}
+
+.focus-indicator {
+  position: absolute;
+  top:0px;
+  left:0px;
+  width:2em;
+  height:2em;
+  pointer-events: none;
+  opacity:0;
+  transition: .3s ease-in-out all;
+  transform: translateY(-3em);
+  color: var(--gc-bg);
+  border-left: 5px solid;
+  border-top: 5px solid;
+
+}
+.goban:focus-within .focus-indicator {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.goban.condensed {
+  --gcp-max-boardsize: calc(100vh - 3em);
+}
+.goban.normal,
+.goban.fullsize {
+  --gcp-max-boardsize: 100vh;
+  display: grid;
+  grid-template-areas: 'board controls'
+  'board comments'
+  'board tree';
+  grid-template-columns: minmax(max-content, var(--gcp-max-boardsize, 100vh)) minmax(250px, 1fr);
+  grid-template-rows: auto 1fr auto;
+
+}
+.goboard {
+  grid-area: board;
+  max-height: var(--gcp-max-boardsize, 100vh);
+  max-width: var(--gcp-max-boardsize, 100vh);
+  overflow-x: auto;
+  height: 100%;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10em);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0em);
+  }
+}
+@keyframes slideInBottom {
+  from {
+    opacity: 0;
+    transform: translateY(10em);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0em);
+  }
+}
+.tree {
+  grid-area: tree;
+  width: 100%;
+  max-height: 40vh;
+  height: 100%;
+  max-width: var(--gcp-max-boardsize, 100vh);
+  background: var(--gc-bg-dark);
+  animation: slideInBottom .5s ease-in-out forwards;
+}
+
+.condensed .tree {
+  position:absolute;
+  height: calc(100% - 3em);
+  background: linear-gradient(var(--gc-bg-80) 50%, transparent);
+  animation: slideIn .5s ease-in-out forwards;
+  pointer-events:none;
+}
+
+.controls {
+  z-index: 5;
+  grid-area: controls;
+}
+
+:not(.condensed) .controls {
+  position: relative;
+}
+
+:not(.condensed) .comments {
+  position: relative;
+  z-index: 0;
+  height: 100%;
+}
+
+.comments {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 3em);
+  max-width: var(--gcp-max-boardsize, 100vh);
+  pointer-events: none;
+}
+

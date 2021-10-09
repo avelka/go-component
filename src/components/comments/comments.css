@@ -1,0 +1,65 @@
+:host {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.wrapper {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  pointer-events: none;
+}
+
+.comments {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-start;
+  flex:1;
+}
+
+.comment-input {
+  display:flex;
+  flex-flow: row;
+  border-top: 2px solid var(--gc-bg-dark);
+  border-bottom: 2px solid var(--gc-bg-light);
+  pointer-events: all;
+}
+
+.comment-input textarea {
+  background: var(--gc-bg-dark);
+  border:none;
+  outline: none;
+  flex:1;
+  padding: 5px;
+  font-size: inherit;
+  color: #fff;
+}
+
+.comment-input button {
+  background: var(--gc-bg-light);
+  border:none;
+  outline: none;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(3em);
+    filter: blur(5px)
+  }
+  to {
+    opacity: .7;
+    transform: translateY(0em);
+    filter: blur(0px)
+  }
+}
+p {
+  animation: slideIn .5s ease-in-out forwards;
+  display: inline-flex;
+  align-items: center;
+  background: var(--gc-bg-dark);
+  border-radius: var(--gc-radius);
+  padding:.5em;
+  margin: .5em;
+  color: var(--gc-txt-dark);
+  opacity: .5;
+}
