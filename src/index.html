@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
   <title>Stencil Component Starter</title>
   <style>
-    html, body {
-      margin:0;
+    html,
+    body {
+      margin: 0;
       height: 100%;
     }
-    .goban-viewer{
+
+    .goban-viewer {
       display: block;
       width: 100%;
     }
+
     :root {
       --gc-font: Verdana, Geneva, Tahoma, sans-serif;
       --gc-radius: 1em;
@@ -21,8 +25,10 @@
       --gc-bg-80: hsla(var(--gc-bg-hsl), 0.8);
       --gc-bg-50: hsla(var(--gc-bg-hsl), 0.5);
       --gc-bg-20: hsla(var(--gc-bg-hsl), 0.2);
-      --gc-bg-dark: hsl(192, 41%, 20%);;
-      --gc-bg-light: hsl(192, 41%, 60%); /* rgb(97, 143, 212); */
+      --gc-bg-dark: hsl(192, 41%, 20%);
+      ;
+      --gc-bg-light: hsl(192, 41%, 60%);
+      /* rgb(97, 143, 212); */
       --gc-bg-board: #ebce6f;
       --gc-line: #383432;
       --gc-txt-dark: #ddd;
@@ -33,36 +39,86 @@
       --gc-empty-stone-txt: #ddd;
       --gc-black-stone-bg:
         radial-gradient(circle at top left,
-            hsla(240, 26%, 68%, .5) 5% ,
-            rgb(25, 25, 40) 95%
-          ), rgb(25, 25, 40);
+          hsla(240, 26%, 68%, .5) 5%,
+          rgb(25, 25, 40) 95%), rgb(25, 25, 40);
       --gc-black-stone-shadow:
-          inset 0 0 2px 1px rgba(0,0,0, .3),
-          inset -5px -5px 10px -5px rgb(0,0,0),
-          2px 3px 5px rgba(0,0,0, .6);
+        inset 0 0 2px 1px rgba(0, 0, 0, .3),
+        inset -5px -5px 10px -5px rgb(0, 0, 0),
+        2px 3px 5px rgba(0, 0, 0, .6);
 
       --gc-white-stone-bg:
-        radial-gradient(
-          circle at top left,
-          hsla(240, 26%, 95%) 5% ,
-          hsla(240, 23%, 65%) 95%
-        ), rgb(25, 25, 40) 95%;
+        radial-gradient(circle at top left,
+          hsla(240, 26%, 95%) 5%,
+          hsla(240, 23%, 65%) 95%), rgb(25, 25, 40) 95%;
 
       --gc-white-stone-shadow:
-        inset 0 0 2px 1px rgba(0,0,0, .3),
-        inset -5px -5px 10px -5px rgb(0,0,0),
-        2px 3px 5px -2px rgba(0,0,0, .6);
+        inset 0 0 2px 1px rgba(0, 0, 0, .3),
+        inset -5px -5px 10px -5px rgb(0, 0, 0),
+        2px 3px 5px -2px rgba(0, 0, 0, .6);
       --gc-white-stone-txt: #555;
       --gc-container-radius: 0px;
     }
   </style>
   <script type="module" src="build/goboard.esm.js"></script>
   <script nomodule src="build/goboard.js"></script>
+  <script>
+    function createSgf(config) {
+      const parsedUrl = new URL(window.location.href);
+      return `(;GM[1]FF[4]CA[UTF-8]AP[AkGo:1]ST[2]RU[Japanese]SZ[${config.size || '19'}]KM[${config.komi || '6.50'}]PW[${config.pw || 'White'}]PB[${config.pb || 'Black'}])`
+    }
 
+    function parseFormData(data) {
+      return Object.fromEntries(data.entries());
+    }
+
+    function updateUrl(url, data) {
+      const newUrl = new URL(url);
+      [...data.entries()]
+        .forEach(([k, v]) => newUrl.searchParams.set(k, v));
+
+      history.pushState({}, "", newUrl);
+      return newUrl;
+    }
+
+    async function updateGoban(data) {
+      let sgf = null;
+      const goban = document.getElementById('goban');
+      if (data.has('sgf')) {
+        sgf = data.get('sgf');
+        goban.setAttribute('sgf', sgf);
+        return;
+      }
+
+      if (data.has('url')) {
+        sgf = await fetch(data.get('url'));
+        goban.setAttribute('sgf', sgf);
+        return;
+      }
+
+      sgf = createSgf(parseFormData(data));
+      goban.setAttribute('sgf', sgf);
+
+    }
+
+    function init() {
+      const newGameForm = document.getElementById('new-game');
+      const parsedUrl = new URL(window.location.href);
+      updateGoban(new URLSearchParams(parsedUrl.search));
+
+      newGameForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const data = new FormData(newGameForm);
+        updateGoban(data);
+        updateUrl(window.location, data);
+      });
+    }
+
+    window.onload = init;
+  </script>
 </head>
-<body>
 
-  <gc-goban class="goban-viewer" sgf="(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
+<body>
+  <gc-goban id="goban" class="goban-viewer" sgf="(;GM[1]FF[4]CA[UTF-8]AP[CGoban:3]ST[2]
   RU[Japanese]SZ[9]KM[0.00]
   PW[Blanc]PB[Noir]
   ;B[cc]
@@ -81,5 +137,32 @@
   ;B[eh]
   ;W[fh]))
   "></gc-goban>
+
+  <header>
+    SGF Reader
+    <nav>
+      <a href="#new-game">New</a>
+      <a href="#open">Open</a>
+    </nav>
+  </header>
+  <div>
+    <form id="new-game">
+      <label for="gb-size">Board Size</label>
+      <select name="size" id="gb-size">
+        <option value="19">19x19</option>
+        <option value="13">13x13</option>
+        <option value="9">9x9</option>
+      </select>
+      <label for="gb-komi">Komi</label>
+      <input name="komi" id="gb-komi" type="number" step="0.5" value="6.5" />
+      <label for="gb-pb">Black Player</label>
+      <input name="pb" id="gb-pb" type="text" value="Black" />
+      <label for="gb-pw">White Player</label>
+      <input name="pw" id="gb-pw" type="text" value="White" />
+
+      <button>Create</button>
+    </form>
+  </div>
 </body>
+
 </html>

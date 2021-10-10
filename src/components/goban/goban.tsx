@@ -19,9 +19,9 @@ export class Goban {
   rule = new RuleService();
 
   @Prop() sgf = null;
-  @Prop() currentPosition: number = 0;
+  @Prop({ mutable: true }) currentPosition: number = 0;
   @State() variations: any = [0];
-  @Prop() options: any = {
+  @Prop({ mutable: true }) options: any = {
     play: false,
     showOrder: false,
     interval: 1,
@@ -201,7 +201,8 @@ export class Goban {
 
   handleKeydown(ev: KeyboardEvent) {
     const isTyping = (ev: any) => {
-      return ['textarea', 'input'].includes(ev.path[0].type);
+
+      return ev?.path ? ['textarea', 'input'].includes(ev?.path[0].type) : false;
     }
 
     if (!isTyping(ev)) {
